@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Front Desk — Npontu Hotel &amp; Events</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">Npontu <small>Hotel &amp; Event Management</small></div>
+    <div class="topbar-right">
+      <span class="role-tag">Front Desk</span>
+      <span class="user" id="user-name">…</span>
+      <button class="btn btn-ghost btn-sm" id="logout-btn">Sign out</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-panel="panel-dashboard">Dashboard</button>
+    <button class="tab" data-panel="panel-rooms">Rooms</button>
+    <button class="tab" data-panel="panel-customers">Customers</button>
+    <button class="tab" data-panel="panel-reservations">Reservations</button>
+    <button class="tab" data-panel="panel-reference">Halls &amp; Restaurants</button>
+  </nav>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section id="panel-dashboard" class="panel active">
+      <div class="grid grid-4" id="stat-cards"></div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Current room occupancy</h2>
+            <div class="sub">Rooms currently checked in, with guest name</div>
+          </div>
+        </div>
+        <div id="occupancy-table" class="loading">Loading…</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Upcoming events</h2>
+            <div class="sub">From today onward</div>
+          </div>
+        </div>
+        <div id="events-table" class="loading">Loading…</div>
+      </div>
+    </section>
+
+    <!-- ROOMS -->
+    <section id="panel-rooms" class="panel">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Rooms</h2>
+            <div class="sub">You can update a room's status. Rate and type changes need a manager.</div>
+          </div>
+        </div>
+        <div id="rooms-table" class="loading">Loading…</div>
+      </div>
+    </section>
+
+    <!-- CUSTOMERS -->
+    <section id="panel-customers" class="panel">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Register a customer</h2>
+          </div>
+        </div>
+        <form class="inline-form" id="customer-form">
+          <div class="field"><label for="c-fname">First name</label><input id="c-fname" required /></div>
+          <div class="field"><label for="c-lname">Last name</label><input id="c-lname" required /></div>
+          <div class="field"><label for="c-phone">Phone</label><input id="c-phone" maxlength="10" required /></div>
+          <button class="btn btn-gold" type="submit">Add customer</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>All customers</h2></div>
+        <div id="customers-table" class="loading">Loading…</div>
+      </div>
+    </section>
+
+    <!-- RESERVATIONS -->
+    <section id="panel-reservations" class="panel">
+      <div class="card">
+        <div class="card-head"><h2>New reservation</h2><div class="sub">Booked under your staff ID automatically</div></div>
+        <form class="inline-form" id="reservation-form">
+          <div class="field"><label for="r-room">Room no.</label><input id="r-room" placeholder="R101" required /></div>
+          <div class="field"><label for="r-customer">Customer ID</label><input id="r-customer" placeholder="CU01" required /></div>
+          <div class="field"><label for="r-checkin">Check-in</label><input id="r-checkin" type="datetime-local" required /></div>
+          <div class="field"><label for="r-checkout">Check-out (optional)</label><input id="r-checkout" type="datetime-local" /></div>
+          <button class="btn btn-gold" type="submit">Book</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>All reservations</h2></div>
+        <div id="reservations-table" class="loading">Loading…</div>
+      </div>
+    </section>
+
+    <!-- REFERENCE -->
+    <section id="panel-reference" class="panel">
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-head"><h2>Conference halls</h2></div>
+          <div id="halls-table" class="loading">Loading…</div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Restaurants</h2></div>
+          <div id="restaurants-table" class="loading">Loading…</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/frontdesk.js"></script>
+</body>
+</html>

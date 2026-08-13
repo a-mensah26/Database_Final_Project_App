@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Npontu Hotel &amp; Events — Sign in</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="login-shell">
+  <div class="login-card">
+    <div class="brand">Npontu
+      <small>Hotel &amp; Event Management</small>
+    </div>
+    <p class="tag">Sign in with your staff account. What you see next depends on your role.</p>
+
+    <div class="error-banner" id="error-banner" role="alert"></div>
+
+    <form id="login-form" novalidate>
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" required />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required />
+      </div>
+      <button class="btn btn-primary" type="submit" id="submit-btn">Sign in</button>
+    </form>
+
+    <div class="demo-hint">
+      Demo accounts (change before real use):<br />
+      Front desk — <span class="mono">frontdesk / frontdesk123</span><br />
+      Manager — <span class="mono">manager / manager123</span>
+    </div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>

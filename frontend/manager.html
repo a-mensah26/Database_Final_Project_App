@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Manager — Npontu Hotel &amp; Events</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">Npontu <small>Hotel &amp; Event Management</small></div>
+    <div class="topbar-right">
+      <span class="role-tag">Manager</span>
+      <span class="user" id="user-name">…</span>
+      <button class="btn btn-ghost btn-sm" id="logout-btn">Sign out</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-panel="panel-dashboard">Dashboard</button>
+    <button class="tab" data-panel="panel-reports">Reports</button>
+    <button class="tab" data-panel="panel-rooms">Rooms</button>
+    <button class="tab" data-panel="panel-customers">Customers</button>
+    <button class="tab" data-panel="panel-reservations">Reservations</button>
+    <button class="tab" data-panel="panel-staff">Staff</button>
+    <button class="tab" data-panel="panel-halls">Halls &amp; Restaurants</button>
+    <button class="tab" data-panel="panel-events">Events</button>
+    <button class="tab" data-panel="panel-invoices">Invoices &amp; Orders</button>
+  </nav>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section id="panel-dashboard" class="panel active">
+      <div class="grid grid-4" id="stat-cards"></div>
+      <div class="card">
+        <div class="card-head"><h2>Current room occupancy</h2></div>
+        <div id="occupancy-table" class="loading">Loading…</div>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section id="panel-reports" class="panel">
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-head"><h2>Room inventory profile</h2><div class="sub">By room type</div></div>
+          <div id="rpt-inventory" class="loading">Loading…</div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Front desk workload</h2></div>
+          <div id="rpt-workload" class="loading">Loading…</div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Hall utilisation</h2></div>
+          <div id="rpt-halls" class="loading">Loading…</div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Outstanding invoices</h2></div>
+          <div id="rpt-outstanding" class="loading">Loading…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROOMS -->
+    <section id="panel-rooms" class="panel">
+      <div class="card">
+        <div class="card-head"><h2>Add a room</h2></div>
+        <form class="inline-form" id="room-form">
+          <div class="field"><label for="rm-no">Room no.</label><input id="rm-no" placeholder="R201" required /></div>
+          <div class="field"><label for="rm-type">Type</label><input id="rm-type" placeholder="Suite" required /></div>
+          <div class="field"><label for="rm-rate">Rate</label><input id="rm-rate" type="number" step="0.01" required /></div>
+          <div class="field"><label for="rm-hk">Housekeeper ID</label><input id="rm-hk" placeholder="HK01" /></div>
+          <button class="btn btn-gold" type="submit">Add room</button>
+        </form>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>All rooms</h2><div class="sub">Edit type/rate, or toggle status</div></div>
+        <div id="rooms-table" class="loading">Loading…</div>
+      </div>
+    </section>
+
+    <!-- CUSTOMERS -->
+    <section id="panel-customers" class="panel">
+      <div class="card">
+        <div class="card-head"><h2>Register a customer</h2></div>
+        <form class="inline-form" id="customer-form">
+          <div class="field"><label for="c-fname">First name</label><input id="c-fname" required /></div>
+          <div class="field"><label for="c-lname">Last name</label><input id="c-lname" required /></div>
+          <div class="field"><label for="c-phone">Phone</label><input id="c-phone" maxlength="10" required /></div>
+          <button class="btn btn-gold" type="submit">Add customer</button>
+        </form>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>All customers</h2></div>
+        <div id="customers-table" class="loading">Loading…</div>
+      </div>
+    </section>
+
+    <!-- RESERVATIONS -->
+    <section id="panel-reservations" class="panel">
+      <div class="card">
+        <div class="card-head"><h2>New reservation</h2><div class="sub">Managers must name the front desk staff handling it</div></div>
+        <form class="inline-form" id="reservation-form">
+          <div class="field"><label for="r-room">Room no.</label><input id="r-room" placeholder="R101" required /></div>
+          <div class="field"><label for="r-customer">Customer ID</label><input id="r-customer" placeholder="CU01" required /></div>
+          <div class="field"><label for="r-staff">Front desk staff ID</label><input id="r-staff" placeholder="FD01" required /></div>
+          <div class="field"><label for="r-checkin">Check-in</label><input id="r-checkin" type="datetime-local" required /></div>
+          <div class="field"><label for="r-checkout">Check-out (optional)</label><input id="r-checkout" type="datetime-local" /></div>
+          <button class="btn btn-gold" type="submit">Book</button>
+        </form>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>All reservations</h2></div>
+        <div id="reservations-table" class="loading">Loading…</div>
+      </div>
+    </section>
+
+    <!-- STAFF -->
+    <section id="panel-staff" class="panel">
+      <div class="card">
+        <div class="card-head"><h2>Add staff member</h2></div>
+        <form class="inline-form" id="staff-form">
+          <div class="field"><label for="s-fname">First name</label><input id="s-fname" required /></div>
+          <div class="field"><label for="s-lname">Last name</label><input id="s-lname" required /></div>
+          <div class="field"><label for="s-role">Role</label>
+            <select id="s-role">
+              <option value="Front Desk">Front Desk</option>
+              <option value="Housekeeping">Housekeeping</option>
+            </select>
+          </div>
+          <div class="field"><label for="s-shift">Shift</label>
+            <select id="s-shift">
+              <option>Morning</option><option>Afternoon</option><option>Evening</option>
+            </select>
+          </div>
+          <div class="field" id="s-floor-wrap" style="display:none">
+            <label for="s-floor">Floor</label><input id="s-floor" type="number" min="0" max="20" />
+          </div>
+          <button class="btn btn-gold" type="submit">Add staff</button>
+        </form>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Staff directory</h2></div>
+        <div id="staff-table" class="loading">Loading…</div>
+      </div>
+    </section>
+
+    <!-- HALLS & RESTAURANTS -->
+    <section id="panel-halls" class="panel">
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-head"><h2>Add conference hall</h2></div>
+          <form class="inline-form" id="hall-form">
+            <div class="field"><label for="h-name">Name</label><input id="h-name" required /></div>
+            <div class="field"><label for="h-cap">Capacity</label><input id="h-cap" type="number" required /></div>
+            <button class="btn btn-gold" type="submit">Add</button>
+          </form>
+          <div id="halls-table" class="loading" style="margin-top:1rem">Loading…</div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Add restaurant</h2></div>
+          <form class="inline-form" id="restaurant-form">
+            <div class="field"><label for="rt-name">Name</label><input id="rt-name" required /></div>
+            <div class="field"><label for="rt-seats">Seats</label><input id="rt-seats" type="number" required /></div>
+            <button class="btn btn-gold" type="submit">Add</button>
+          </form>
+          <div id="restaurants-table" class="loading" style="margin-top:1rem">Loading…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVENTS -->
+    <section id="panel-events" class="panel">
+      <div class="card">
+        <div class="card-head"><h2>Schedule an event</h2></div>
+        <form class="inline-form" id="event-form">
+          <div class="field"><label for="e-type">Type</label>
+            <select id="e-type">
+              <option>Wedding</option><option>Conference</option><option>Seminar</option>
+              <option>Networking Event</option><option>Birthday Party</option>
+            </select>
+          </div>
+          <div class="field"><label for="e-date">Date</label><input id="e-date" type="date" required /></div>
+          <div class="field"><label for="e-duration">Duration (hrs)</label><input id="e-duration" type="number" step="0.5" required /></div>
+          <div class="field"><label for="e-host">Host (customer ID)</label><input id="e-host" placeholder="CU01" required /></div>
+          <div class="field"><label for="e-hall">Hall ID</label><input id="e-hall" placeholder="CH01" required /></div>
+          <button class="btn btn-gold" type="submit">Schedule</button>
+        </form>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>All events</h2></div>
+        <div id="events-table" class="loading">Loading…</div>
+      </div>
+    </section>
+
+    <!-- INVOICES & ORDERS -->
+    <section id="panel-invoices" class="panel">
+      <div class="card">
+        <div class="card-head"><h2>Invoices</h2><div class="sub">Update amount paid</div></div>
+        <div id="invoices-table" class="loading">Loading…</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Restaurant orders</h2></div>
+        <div id="orders-table" class="loading">Loading…</div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/manager.js"></script>
+</body>
+</html>
