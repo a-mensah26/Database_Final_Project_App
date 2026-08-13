@@ -1,5 +1,5 @@
 """
-Creates (or resets) the two demo login accounts in APP_USER:
+Creates (or resets) the two authorized staff login accounts in APP_USER:
 
     frontdesk / frontdesk123   -> Role = Front Desk, linked to StaffID FD01
     manager   / manager123     -> Role = Manager
@@ -9,7 +9,7 @@ Run once, using a DB user with write access to APP_USER
 
     python seed_users.py
 
-CHANGE THESE PASSWORDS before this app is used by real staff.
+CHANGE THESE PASSWORDS before this app is used in production.
 """
 import pymysql
 import pymysql.cursors
@@ -20,6 +20,8 @@ import config
 USERS = [
     ("U0001", "frontdesk", "frontdesk123", "Rita Danso", "Front Desk", "FD01"),
     ("U0002", "manager", "manager123", "Ama Boateng", "Manager", None),
+    ("U0003", "tettehq", "123456", "Tetteh Quarshie", "Front Desk", "FD02"),
+    ("U0004", "akosuab", "123456", "Akosua Boatemaa", "Manager", None),
 ]
 
 

@@ -3,20 +3,160 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Npontu Hotel &amp; Events — Sign in</title>
+<title>Akwaaba — Diaspora Heritage &amp; Event Hub</title>
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-<div class="login-shell">
-  <div class="login-card">
-    <div class="brand">Npontu
-      <small>Hotel &amp; Event Management</small>
+
+<!-- KENTE DECORATIVE STRIP AT TOP OF PAGE -->
+<div class="kente-banner"></div>
+
+<!-- PUBLIC NAVIGATION -->
+<header class="public-nav">
+  <div class="logo">
+    Akwaaba <span>Diaspora Heritage Hub</span>
+  </div>
+  <nav>
+    <a href="#hero">Home</a>
+    <a href="#portal">Customer Booking</a>
+    <a href="#showcase">Live Showcase</a>
+    <button class="btn btn-primary btn-sm" id="open-portal-btn">Staff Portal</button>
+  </nav>
+</header>
+
+<!-- HERO SECTION -->
+<section class="hero-section" id="hero">
+  <div class="hero-content">
+    <h1>Welcome Home.</h1>
+    <p class="tagline">Premium hospitality, heritage reunions, and cultural celebrations designed for the returning African diaspora. Book rooms, track request status, and experience true heritage.</p>
+    <div class="hero-actions">
+      <a href="#portal" class="btn btn-gold">Book Heritage Stay</a>
+      <a href="#showcase" class="btn btn-ghost" style="color:#fff; border-color:rgba(255,255,255,0.4);">View Live Status</a>
     </div>
-    <p class="tag">Sign in with your staff account. What you see next depends on your role.</p>
+  </div>
+</section>
+
+<!-- CUSTOMER BOOKING PORTAL SECTION -->
+<section class="portal-section" id="portal">
+  <div class="section-title">
+    <h2>Customer Booking Portal</h2>
+    <p>Fill out a stay request based on our active inventory, receive a reservation token, and track your request status in real-time.</p>
+  </div>
+
+  <div class="portal-container card">
+    <!-- Tabs for Customer Portal -->
+    <div class="portal-tab-header">
+      <button class="cust-tab-btn active" id="tab-request-btn">Submit Booking Request</button>
+      <button class="cust-tab-btn" id="tab-track-btn">Track Request Status</button>
+    </div>
+
+    <!-- Panel 1: Request Form -->
+    <div class="cust-panel active" id="panel-request">
+      <form id="customer-booking-form" class="african-form" novalidate>
+        <p class="form-help">Submit your details to request accommodation. Our front desk staff will review and assign an available room.</p>
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="cust-fname">First Name</label>
+            <input id="cust-fname" placeholder="e.g. Kwame" required />
+          </div>
+          <div class="field">
+            <label for="cust-lname">Last Name</label>
+            <input id="cust-lname" placeholder="e.g. Mensah" required />
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="cust-phone">Phone Number</label>
+            <input id="cust-phone" placeholder="e.g. 0246292423" required />
+          </div>
+          <div class="field">
+            <label for="cust-roomtype">Preferred Room Type</label>
+            <select id="cust-roomtype" required>
+              <option value="Single">Single (GH₵ 250 - 300)</option>
+              <option value="Double">Double (GH₵ 325 - 375)</option>
+              <option value="Deluxe">Deluxe (GH₵ 500 - 550)</option>
+              <option value="Suite">Suite (GH₵ 775 - 800)</option>
+              <option value="Executive Suite">Executive Suite (GH₵ 1175 - 1250)</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="cust-checkin">Check-in Date &amp; Time</label>
+            <input id="cust-checkin" type="datetime-local" required />
+          </div>
+          <div class="field">
+            <label for="cust-checkout">Check-out Date &amp; Time</label>
+            <input id="cust-checkout" type="datetime-local" required />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-gold btn-block" id="cust-submit-btn">Submit Stay Request</button>
+      </form>
+    </div>
+
+    <!-- Panel 2: Track Form -->
+    <div class="cust-panel" id="panel-track">
+      <form id="customer-track-form" class="african-form" novalidate>
+        <p class="form-help">Enter your 6-character receipt token (e.g. AK-W3A) to view your booking request status.</p>
+        <div class="field inline-field">
+          <label for="track-token" class="visually-hidden">Request Token</label>
+          <input id="track-token" placeholder="Enter Token (e.g. AK-H7D)" style="text-transform: uppercase;" required />
+          <button type="submit" class="btn btn-gold" id="track-submit-btn">Track Status</button>
+        </div>
+      </form>
+
+      <!-- Track Result Output -->
+      <div id="track-result-container" style="display: none; margin-top: 2rem;">
+        <!-- Card gets injected here -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE SHOWCASE SECTION -->
+<section class="showcase-section" id="showcase">
+  <div class="section-title">
+    <h2>Live Hub Status</h2>
+    <p>See upcoming cultural events and summits scheduled at the hub.</p>
+  </div>
+
+  <div style="max-width: 800px; margin: 0 auto;">
+    <!-- PUBLIC EVENTS -->
+    <div class="card">
+      <div class="card-head">
+        <h2>Upcoming Celebrations &amp; Summits</h2>
+        <div class="sub">Diaspora events hosted in our conference halls</div>
+      </div>
+      <div id="public-events-list" class="loading">Loading upcoming events…</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="public-footer">
+  <p>&copy; 2026 Akwaaba Diaspora Heritage &amp; Event Hub. All rights reserved. Connecting heritage and hospitality.</p>
+</footer>
+
+<!-- STAFF PORTAL MODAL DIALOG (SCROLLABLE & FIXED POPUP) -->
+<div class="portal-modal-backdrop" id="portal-modal">
+  <div class="portal-modal-card">
+    <button class="portal-close-btn" id="close-portal-btn">&times;</button>
+    
+    <div class="portal-brand">
+      Akwaaba
+      <small>Diaspora Heritage Hub Portal</small>
+    </div>
+    
+    <!-- Tab Controls -->
+    <div class="portal-tabs" style="display: none;">
+      <button class="portal-tab active" id="tab-login-btn">Sign In</button>
+    </div>
 
     <div class="error-banner" id="error-banner" role="alert"></div>
 
-    <form id="login-form" novalidate>
+    <!-- SIGN IN FORM -->
+    <form id="login-form" class="portal-form-panel active" novalidate>
+      <p class="form-instructions">Authorized staff login. Your dashboard matches your security clearance.</p>
       <div class="field">
         <label for="username">Username</label>
         <input id="username" name="username" type="text" autocomplete="username" required />
@@ -25,18 +165,13 @@
         <label for="password">Password</label>
         <input id="password" name="password" type="password" autocomplete="current-password" required />
       </div>
-      <button class="btn btn-primary" type="submit" id="submit-btn">Sign in</button>
+      <button class="btn btn-primary btn-block" type="submit" id="submit-btn">Sign In</button>
     </form>
-
-    <div class="demo-hint">
-      Demo accounts (change before real use):<br />
-      Front desk — <span class="mono">frontdesk / frontdesk123</span><br />
-      Manager — <span class="mono">manager / manager123</span>
-    </div>
   </div>
 </div>
 
 <script src="js/api.js"></script>
+<script src="js/ui.js"></script>
 <script src="js/login.js"></script>
 </body>
 </html>

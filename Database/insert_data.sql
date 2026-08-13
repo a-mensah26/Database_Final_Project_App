@@ -1,0 +1,302 @@
+-- ============================================================
+-- insert_data.sql
+-- Seeds sample data and system logins into the database.
+-- ============================================================
+
+USE HotelReservationSystem;
+
+-- --- Data for STAFF ---
+INSERT INTO STAFF (StaffID, StaffFName, StaffLName, StaffRole) VALUES
+('FD01', 'Rita', 'Danso', 'Front Desk'),
+('FD02', 'Yaw', 'Sackey', 'Front Desk'),
+('FD03', 'Rita', 'Kyei', 'Front Desk'),
+('FD04', 'Kojo', 'Appiah', 'Front Desk'),
+('FD05', 'Adwoa', 'Annan', 'Front Desk'),
+('FD06', 'Araba', 'Kusi', 'Front Desk'),
+('FD07', 'Fiifi', 'Annan', 'Front Desk'),
+('FD08', 'Yaw', 'Fosu', 'Front Desk'),
+('FD09', 'Akua', 'Sackey', 'Front Desk'),
+('FD10', 'Adwoa', 'Tetteh', 'Front Desk'),
+('FD11', 'Araba', 'Agyeman', 'Front Desk'),
+('FD12', 'Rita', 'Frimpong', 'Front Desk'),
+('FD13', 'Elikem', 'Osei', 'Front Desk'),
+('FD14', 'Adjoa', 'Adjei', 'Front Desk'),
+('FD15', 'Fiifi', 'Mensah', 'Front Desk'),
+('HK01', 'Elikem', 'Kyei', 'Housekeeping'),
+('HK02', 'Kofi', 'Darko', 'Housekeeping'),
+('HK03', 'Kwame', 'Yeboah', 'Housekeeping'),
+('HK04', 'Nana', 'Quaye', 'Housekeeping'),
+('HK05', 'Yaw', 'Gyasi', 'Housekeeping'),
+('HK06', 'Kwaku', 'Sarpong', 'Housekeeping'),
+('HK07', 'Fiifi', 'Osei', 'Housekeeping'),
+('HK08', 'Afia', 'Gyasi', 'Housekeeping'),
+('HK09', 'Kwame', 'Agyeman', 'Housekeeping'),
+('HK10', 'Kwame', 'Amoah', 'Housekeeping'),
+('HK11', 'Michael', 'Danso', 'Housekeeping'),
+('HK12', 'Yaw', 'Kyei', 'Housekeeping'),
+('HK13', 'Elikem', 'Yeboah', 'Housekeeping'),
+('HK14', 'Kwabena', 'Yeboah', 'Housekeeping'),
+('HK15', 'Nafisa', 'Quaye', 'Housekeeping');
+
+-- --- Data for HOUSEKEEPING ---
+INSERT INTO HOUSEKEEPING (StaffID, Shift, AssignedFloor) VALUES
+('HK01', 'Morning', 1),
+('HK02', 'Afternoon', 2),
+('HK03', 'Evening', 3),
+('HK04', 'Morning', 4),
+('HK05', 'Afternoon', 5),
+('HK06', 'Evening', 6),
+('HK07', 'Morning', 7),
+('HK08', 'Afternoon', 8),
+('HK09', 'Evening', 9),
+('HK10', 'Morning', 10),
+('HK11', 'Afternoon', 11),
+('HK12', 'Evening', 12),
+('HK13', 'Morning', 13),
+('HK14', 'Afternoon', 14),
+('HK15', 'Evening', 15);
+
+-- --- Data for FRONTDESK ---
+INSERT INTO FRONTDESK (StaffID, Shift) VALUES
+('FD01', 'Morning'),
+('FD02', 'Afternoon'),
+('FD03', 'Evening'),
+('FD04', 'Morning'),
+('FD05', 'Afternoon'),
+('FD06', 'Evening'),
+('FD07', 'Morning'),
+('FD08', 'Afternoon'),
+('FD09', 'Evening'),
+('FD10', 'Morning'),
+('FD11', 'Afternoon'),
+('FD12', 'Evening'),
+('FD13', 'Morning'),
+('FD14', 'Afternoon'),
+('FD15', 'Evening');
+
+-- --- Data for CUSTOMER ---
+INSERT INTO CUSTOMER (CustomerID, CustomerFName, CustomerLName, PhoneNumber) VALUES
+('CU01', 'Kwame', 'Mensah', '0246292423'),
+('CU02', 'Ama', 'Owusu', '0555491946'),
+('CU03', 'Kofi', 'Asante', '0244539704'),
+('CU04', 'Akosua', 'Boateng', '0596279418'),
+('CU05', 'Yaw', 'Appiah', '0209375710'),
+('CU06', 'Efua', 'Osei', '0558698256'),
+('CU07', 'Kwabena', 'Addo', '0205443951'),
+('CU08', 'Adjoa', 'Agyeman', '0205137722'),
+('CU09', 'Kwesi', 'Darko', '0265408072'),
+('CU10', 'Abena', 'Frimpong', '0268187926'),
+('CU11', 'Kojo', 'Sarpong', '0597700828'),
+('CU12', 'Akua', 'Amoah', '0504679591'),
+('CU13', 'Fiifi', 'Yeboah', '0209548432'),
+('CU14', 'Araba', 'Tetteh', '0552525206'),
+('CU15', 'Kwaku', 'Ofori', '0271790481'),
+('CU16', 'Afia', 'Gyasi', '0272839607'),
+('CU17', 'Nana', 'Quaye', '0203684052'),
+('CU18', 'Esi', 'Sackey', '0278082668'),
+('CU19', 'Kobby', 'Dodoo', '0592065818'),
+('CU20', 'Aba', 'Annan', '0557402509'),
+('CU21', 'Sena', 'Baffoe', '0598852574'),
+('CU22', 'Elikem', 'Kusi', '0595218028'),
+('CU23', 'Selorm', 'Adjei', '0591192619'),
+('CU24', 'Nafisa', 'Ansah', '0262921859'),
+('CU25', 'Ibrahim', 'Bediako', '0265476583'),
+('CU26', 'Fatima', 'Danso', '0276707197'),
+('CU27', 'Rita', 'Fosu', '0245924115'),
+('CU28', 'Michael', 'Kyei', '0553653446'),
+('CU29', 'Grace', 'Wiredu', '0551054447'),
+('CU30', 'Samuel', 'Acheampong', '0265418934'),
+('CU333', 'Kofi', 'Manu', '0593740163');
+
+-- --- Data for CONFERENCE_HALL ---
+INSERT INTO CONFERENCE_HALL (HallID, HallName, Capacity) VALUES
+('CH01', 'Grand Ballroom', 500),
+('CH02', 'Kente Hall', 150),
+('CH03', 'Azure Conference Room', 100),
+('CH04', 'Palm Court Hall', 250),
+('CH05', 'Diamond Suite Hall', 80),
+('CH06', 'Regency Hall', 300);
+
+-- --- Data for RESTAURANT ---
+INSERT INTO RESTAURANT (RestaurantID, RestaurantName, SeatingCapacity) VALUES
+('RT01', 'The Terrace Restaurant', 120),
+('RT02', 'Savannah Grill', 80),
+('RT03', 'Ocean View Restaurant', 100),
+('RT04', 'Garden Bistro', 60),
+('RT05', 'Kente Kitchen', 90);
+
+-- --- Data for ROOM ---
+INSERT INTO ROOM (RoomNo, RoomType, RoomRate, RoomStatus, HousekeeperID) VALUES
+('R101', 'Single', '275.00', 'Occupied', 'HK01'),
+('R102', 'Double', '350.00', 'Vacant', 'HK02'),
+('R103', 'Deluxe', '550.00', 'Occupied', 'HK03'),
+('R104', 'Suite', '775.00', 'Vacant', 'HK04'),
+('R105', 'Executive Suite', '1225.00', 'Occupied', 'HK05'),
+('R106', 'Single', '300.00', 'Vacant', 'HK06'),
+('R107', 'Double', '375.00', 'Occupied', 'HK07'),
+('R108', 'Deluxe', '500.00', 'Vacant', 'HK08'),
+('R109', 'Suite', '800.00', 'Occupied', 'HK09'),
+('R110', 'Executive Suite', '1175.00', 'Vacant', 'HK10'),
+('R111', 'Single', '250.00', 'Occupied', 'HK11'),
+('R112', 'Double', '350.00', 'Vacant', 'HK12'),
+('R113', 'Deluxe', '550.00', 'Occupied', 'HK13'),
+('R114', 'Suite', '800.00', 'Vacant', 'HK14'),
+('R115', 'Executive Suite', '1225.00', 'Occupied', 'HK15'),
+('R116', 'Single', '250.00', 'Vacant', 'HK01'),
+('R117', 'Double', '375.00', 'Occupied', 'HK02'),
+('R118', 'Deluxe', '500.00', 'Vacant', 'HK03'),
+('R119', 'Suite', '750.00', 'Occupied', 'HK04'),
+('R120', 'Executive Suite', '1175.00', 'Vacant', 'HK05'),
+('R121', 'Single', '250.00', 'Occupied', 'HK06'),
+('R122', 'Double', '375.00', 'Vacant', 'HK07'),
+('R123', 'Deluxe', '525.00', 'Occupied', 'HK08'),
+('R124', 'Suite', '725.00', 'Vacant', 'HK09'),
+('R125', 'Executive Suite', '1225.00', 'Occupied', 'HK10'),
+('R126', 'Single', '300.00', 'Vacant', 'HK11'),
+('R127', 'Double', '325.00', 'Occupied', 'HK12'),
+('R128', 'Deluxe', '525.00', 'Vacant', 'HK13'),
+('R129', 'Suite', '775.00', 'Occupied', 'HK14'),
+('R130', 'Executive Suite', '1250.00', 'Vacant', 'HK15');
+
+-- --- Data for RESERVATION ---
+INSERT INTO RESERVATION (ReservationID, RoomID, CustomerID, StaffID, CheckIn, CheckOut) VALUES
+('RES01', 'R101', 'CU01', 'FD01', '2026-01-01 14:00:00', '2026-01-05 11:00:00'),
+('RES02', 'R102', 'CU02', 'FD02', '2026-02-02 14:00:00', '2026-02-05 11:00:00'),
+('RES03', 'R103', 'CU03', 'FD03', '2026-03-03 14:00:00', '2026-03-07 11:00:00'),
+('RES04', 'R104', 'CU04', 'FD04', '2026-04-04 14:00:00', '2026-04-09 11:00:00'),
+('RES05', 'R105', 'CU05', 'FD05', '2026-05-05 14:00:00', '2026-05-09 11:00:00'),
+('RES06', 'R106', 'CU06', 'FD06', '2026-06-06 14:00:00', '2026-06-07 11:00:00'),
+('RES07', 'R107', 'CU07', 'FD07', '2026-07-07 14:00:00', '2026-07-09 11:00:00'),
+('RES08', 'R108', 'CU08', 'FD08', '2026-08-08 14:00:00', '2026-08-10 11:00:00'),
+('RES09', 'R109', 'CU09', 'FD09', '2026-01-09 14:00:00', '2026-01-10 11:00:00'),
+('RES10', 'R110', 'CU10', 'FD10', '2026-02-10 14:00:00', '2026-02-13 11:00:00'),
+('RES11', 'R111', 'CU11', 'FD11', '2026-03-11 14:00:00', '2026-03-12 11:00:00'),
+('RES12', 'R112', 'CU12', 'FD12', '2026-04-12 14:00:00', '2026-04-17 11:00:00'),
+('RES13', 'R113', 'CU13', 'FD13', '2026-05-13 14:00:00', '2026-05-18 11:00:00'),
+('RES14', 'R114', 'CU14', 'FD14', '2026-06-14 14:00:00', '2026-06-16 11:00:00'),
+('RES15', 'R115', 'CU15', 'FD15', '2026-07-15 14:00:00', '2026-07-20 11:00:00'),
+('RES16', 'R116', 'CU16', 'FD01', '2026-08-16 14:00:00', '2026-08-18 11:00:00'),
+('RES17', 'R117', 'CU17', 'FD02', '2026-01-17 14:00:00', '2026-01-18 11:00:00'),
+('RES18', 'R118', 'CU18', 'FD03', '2026-02-18 14:00:00', '2026-02-19 11:00:00'),
+('RES19', 'R119', 'CU19', 'FD04', '2026-03-19 14:00:00', '2026-03-20 11:00:00'),
+('RES20', 'R120', 'CU20', 'FD05', '2026-04-20 14:00:00', '2026-04-22 11:00:00'),
+('RES21', 'R121', 'CU21', 'FD06', '2026-05-21 14:00:00', '2026-05-22 11:00:00'),
+('RES22', 'R122', 'CU22', 'FD07', '2026-06-22 14:00:00', '2026-06-23 11:00:00'),
+('RES23', 'R123', 'CU23', 'FD08', '2026-07-23 14:00:00', '2026-07-26 11:00:00'),
+('RES24', 'R124', 'CU24', 'FD09', '2026-08-24 14:00:00', '2026-08-25 11:00:00'),
+('RES25', 'R125', 'CU25', 'FD10', '2026-01-25 14:00:00', '2026-02-02 11:00:00'),
+('RES26', 'R126', 'CU26', 'FD11', '2026-02-26 14:00:00', '2026-02-28 11:00:00'),
+('RES27', 'R127', 'CU27', 'FD12', '2026-03-27 14:00:00', '2026-04-02 11:00:00'),
+('RES28', 'R128', 'CU28', 'FD13', '2026-04-01 14:00:00', NULL),
+('RES29', 'R129', 'CU29', 'FD14', '2026-05-02 14:00:00', NULL),
+('RES30', 'R130', 'CU30', 'FD15', '2026-06-03 14:00:00', NULL),
+('RES4E', 'R102', 'CU05', 'FD01', '2026-09-01 14:00:00', '2026-09-05 11:00:00'),
+('RESB6', 'R102', 'CU05', 'FD01', '2026-09-01 14:00:00', '2026-09-05 11:00:00');
+
+-- --- Data for EVENT ---
+INSERT INTO EVENT (EventID, EventType, EventDate, EventDuration, Host, HallID) VALUES
+('EV01', 'Wedding', '2026-01-02', '2.0', 'CU01', 'CH01'),
+('EV02', 'Conference', '2026-02-03', '3.0', 'CU02', 'CH02'),
+('EV03', 'Seminar', '2026-03-04', '3.5', 'CU03', 'CH03'),
+('EV04', 'Networking Event', '2026-04-05', '4.0', 'CU04', 'CH04'),
+('EV05', 'Birthday Party', '2026-05-06', '5.0', 'CU05', 'CH05'),
+('EV06', 'Wedding', '2026-06-07', '6.0', 'CU06', 'CH06'),
+('EV07', 'Conference', '2026-07-08', '8.0', 'CU07', 'CH01'),
+('EV08', 'Seminar', '2026-08-09', '2.0', 'CU08', 'CH02'),
+('EV09', 'Networking Event', '2026-01-10', '3.0', 'CU09', 'CH03'),
+('EV10', 'Birthday Party', '2026-02-11', '3.5', 'CU10', 'CH04'),
+('EV11', 'Wedding', '2026-03-12', '4.0', 'CU11', 'CH05'),
+('EV12', 'Conference', '2026-04-13', '5.0', 'CU12', 'CH06'),
+('EV13', 'Seminar', '2026-05-14', '6.0', 'CU13', 'CH01'),
+('EV14', 'Networking Event', '2026-06-15', '8.0', 'CU14', 'CH02'),
+('EV15', 'Birthday Party', '2026-07-16', '2.0', 'CU15', 'CH03'),
+('EV16', 'Wedding', '2026-08-17', '3.0', 'CU16', 'CH04'),
+('EV17', 'Conference', '2026-01-18', '3.5', 'CU17', 'CH05'),
+('EV18', 'Seminar', '2026-02-19', '4.0', 'CU18', 'CH06'),
+('EV19', 'Networking Event', '2026-03-20', '5.0', 'CU19', 'CH01'),
+('EV20', 'Birthday Party', '2026-04-21', '6.0', 'CU20', 'CH02'),
+('EV21', 'Wedding', '2026-05-22', '8.0', 'CU21', 'CH03'),
+('EV22', 'Conference', '2026-06-23', '2.0', 'CU22', 'CH04'),
+('EV23', 'Seminar', '2026-07-24', '3.0', 'CU23', 'CH05'),
+('EV24', 'Networking Event', '2026-08-25', '3.5', 'CU24', 'CH06'),
+('EV25', 'Birthday Party', '2026-01-26', '4.0', 'CU25', 'CH01');
+
+-- --- Data for INVOICE ---
+INSERT INTO INVOICE (InvoiceNo, ReservationID, CustomerID, AmountPayable, AmountPaid) VALUES
+('INV01', 'RES01', 'CU01', '500.00', '0.00'),
+('INV02', 'RES02', 'CU02', '1750.00', '1750.00'),
+('INV03', 'RES03', 'CU03', '2500.00', '2500.00'),
+('INV04', 'RES04', 'CU04', '3000.00', '3000.00'),
+('INV05', 'RES05', 'CU05', '2400.00', '2400.00'),
+('INV06', 'RES06', 'CU06', '1000.00', '500.00'),
+('INV07', 'RES07', 'CU07', '1400.00', '1400.00'),
+('INV08', 'RES08', 'CU08', '1000.00', '0.00'),
+('INV09', 'RES09', 'CU09', '750.00', '750.00'),
+('INV10', 'RES10', 'CU10', '1200.00', '1200.00'),
+('INV11', 'RES11', 'CU11', '1000.00', '500.00'),
+('INV12', 'RES12', 'CU12', '1050.00', '1050.00'),
+('INV13', 'RES13', 'CU13', '2000.00', '2000.00'),
+('INV14', 'RES14', 'CU14', '3000.00', '3000.00'),
+('INV15', 'RES15', 'CU15', '4800.00', '0.00'),
+('INV16', 'RES16', 'CU16', '250.00', '125.00'),
+('INV17', 'RES17', 'CU17', '350.00', '350.00'),
+('INV18', 'RES18', 'CU18', '500.00', '500.00'),
+('INV19', 'RES19', 'CU19', '3000.00', '3000.00'),
+('INV20', 'RES20', 'CU20', '3600.00', '3600.00'),
+('INV21', 'RES21', 'CU21', '250.00', '125.00'),
+('INV22', 'RES22', 'CU22', '700.00', '0.00'),
+('INV23', 'RES23', 'CU23', '1000.00', '1000.00'),
+('INV24', 'RES24', 'CU24', '1500.00', '1500.00'),
+('INV25', 'RES25', 'CU25', '6000.00', '6000.00'),
+('INV26', 'RES26', 'CU26', '1000.00', '500.00'),
+('INV27', 'RES27', 'CU27', '700.00', '700.00'),
+('INV28', 'RES28', 'CU28', '2000.00', '2000.00'),
+('INV29', 'RES29', 'CU29', '1500.00', '0.00'),
+('INV30', 'RES30', 'CU30', '3600.00', '3600.00');
+
+-- --- Data for RESTAURANT_ORDER ---
+INSERT INTO RESTAURANT_ORDER (OrderID, CustomerID, RestaurantID, InvoiceID, OrderDetails) VALUES
+('ORD01', 'CU01', 'RT01', 'INV01', '2x Jollof Rice, 1x Grilled Chicken, 2x Soft Drinks'),
+('ORD02', 'CU02', 'RT02', NULL, '1x Banku with Tilapia, 1x Malt Drink'),
+('ORD03', 'CU03', 'RT03', 'INV03', '3x Fufu with Light Soup, 3x Water'),
+('ORD04', 'CU04', 'RT04', NULL, '1x Waakye Special, 1x Fried Plantain, 1x Fruit Juice'),
+('ORD05', 'CU05', 'RT05', 'INV05', '2x Continental Breakfast, 2x Coffee'),
+('ORD06', 'CU06', 'RT01', NULL, '1x Grilled Red Snapper, 1x Salad, 1x Wine'),
+('ORD07', 'CU07', 'RT02', 'INV07', '2x Club Sandwich, 2x Iced Tea'),
+('ORD08', 'CU08', 'RT03', NULL, '1x Kelewele, 1x Kebab Platter, 2x Soft Drinks'),
+('ORD09', 'CU09', 'RT04', 'INV09', '4x Party Jollof Combo, 4x Soft Drinks'),
+('ORD10', 'CU10', 'RT05', NULL, '1x Vegetable Pasta, 1x Sparkling Water'),
+('ORD11', 'CU11', 'RT01', 'INV11', '2x Jollof Rice, 1x Grilled Chicken, 2x Soft Drinks'),
+('ORD12', 'CU12', 'RT02', NULL, '1x Banku with Tilapia, 1x Malt Drink'),
+('ORD13', 'CU13', 'RT03', 'INV13', '3x Fufu with Light Soup, 3x Water'),
+('ORD14', 'CU14', 'RT04', NULL, '1x Waakye Special, 1x Fried Plantain, 1x Fruit Juice'),
+('ORD15', 'CU15', 'RT05', 'INV15', '2x Continental Breakfast, 2x Coffee'),
+('ORD16', 'CU16', 'RT01', NULL, '1x Grilled Red Snapper, 1x Salad, 1x Wine'),
+('ORD17', 'CU17', 'RT02', 'INV17', '2x Club Sandwich, 2x Iced Tea'),
+('ORD18', 'CU18', 'RT03', NULL, '1x Kelewele, 1x Kebab Platter, 2x Soft Drinks'),
+('ORD19', 'CU19', 'RT04', 'INV19', '4x Party Jollof Combo, 4x Soft Drinks'),
+('ORD20', 'CU20', 'RT05', NULL, '1x Vegetable Pasta, 1x Sparkling Water'),
+('ORD21', 'CU21', 'RT01', 'INV21', '2x Jollof Rice, 1x Grilled Chicken, 2x Soft Drinks'),
+('ORD22', 'CU22', 'RT02', NULL, '1x Banku with Tilapia, 1x Malt Drink'),
+('ORD23', 'CU23', 'RT03', 'INV23', '3x Fufu with Light Soup, 3x Water'),
+('ORD24', 'CU24', 'RT04', NULL, '1x Waakye Special, 1x Fried Plantain, 1x Fruit Juice'),
+('ORD25', 'CU25', 'RT05', 'INV25', '2x Continental Breakfast, 2x Coffee'),
+('ORD26', 'CU26', 'RT01', NULL, '1x Grilled Red Snapper, 1x Salad, 1x Wine'),
+('ORD27', 'CU27', 'RT02', 'INV27', '2x Club Sandwich, 2x Iced Tea'),
+('ORD28', 'CU28', 'RT03', NULL, '1x Kelewele, 1x Kebab Platter, 2x Soft Drinks'),
+('ORD29', 'CU29', 'RT04', 'INV29', '4x Party Jollof Combo, 4x Soft Drinks'),
+('ORD30', 'CU30', 'RT05', NULL, '1x Vegetable Pasta, 1x Sparkling Water');
+
+-- --- Data for RESERVATION_REQUEST ---
+INSERT INTO RESERVATION_REQUEST (RequestToken, CustomerID, RoomType, CheckIn, CheckOut, Status, RoomNo, StaffID, RequestDate) VALUES
+('AK-CFF', 'CU05', 'Double', '2026-09-01 14:00:00', '2026-09-05 11:00:00', 'Approved', 'R102', 'FD01', '2026-08-13'),
+('AK-CNW', 'CU05', 'Double', '2026-09-01 14:00:00', '2026-09-05 11:00:00', 'Approved', 'R102', 'FD01', '2026-08-13'),
+('AK-E4B', 'CU333', 'Single', '2026-08-28 19:18:00', '2026-08-29 19:18:00', 'Pending', NULL, NULL, '2026-08-13');
+
+-- --- Data for APP_USER ---
+INSERT INTO APP_USER (UserID, Username, PasswordHash, FullName, Role, StaffID) VALUES
+('U0001', 'frontdesk', 'scrypt:32768:8:1$dTPH8nivoi2S2Sd9$2630ccb75c1da19d3145c84237ac8b44c7c7b07e0ddb3f0d150f601a790b09b1bf87d08c9d8791c86f8df5c0c5cc583380f56f2e1039111ecb1a4db8cf7a4ac9', 'Rita Danso', 'Front Desk', 'FD01'),
+('U0002', 'manager', 'scrypt:32768:8:1$8cRel8csN3biibiv$effa41b863c5d3079af74e271ccb46e08f028967af4527e3a9a41a861d21dcebe55e49d392add89ac2f25deca68989ff8ddcdda5fa9aa8d81bbbe956fd6c44f6', 'Ama Boateng', 'Manager', NULL),
+('U0003', 'tettehq', 'scrypt:32768:8:1$lSN1IFZEskv7yjq4$c52a524011bffe253b785a012e00ab1de1d0143db67784736a6bae786b1ccb982c0ae6afeb50a021929913d4c28914463c32a76c7956e953e1dabc0987c5c26a', 'Tetteh Quarshie', 'Front Desk', 'FD02'),
+('U0004', 'akosuab', 'scrypt:32768:8:1$Bhq2t8usUpS4QhnA$4d7d654a59b3ceffb2859f2443deae40fadd4640eec4af71ac9c8cf1690d25c17609aead06f9cd488c1c06b20fdba1b13ad1fdd98b0059a338f627c3ebd3fb71', 'Akosua Boatemaa', 'Manager', NULL);
+

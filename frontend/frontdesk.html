@@ -3,122 +3,257 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Front Desk — Npontu Hotel &amp; Events</title>
+<title>Akwaaba Portal — Front Desk</title>
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+
 <div class="app-shell">
-  <header class="topbar">
-    <div class="brand">Npontu <small>Hotel &amp; Event Management</small></div>
-    <div class="topbar-right">
-      <span class="role-tag">Front Desk</span>
-      <span class="user" id="user-name">…</span>
-      <button class="btn btn-ghost btn-sm" id="logout-btn">Sign out</button>
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      Akwaaba <span>Portal</span>
+      <small>Front Desk Staff</small>
     </div>
-  </header>
+    
+    <nav class="sidebar-nav tabs">
+      <button class="tab active" data-panel="panel-dashboard">Dashboard</button>
+      <button class="tab" data-panel="panel-requests">Reservation Requests</button>
+      <button class="tab" data-panel="panel-rooms">Rooms &amp; Housekeeping</button>
+      <button class="tab" data-panel="panel-customers">Customers</button>
+      <button class="tab" data-panel="panel-reservations">Reservations</button>
+      <button class="tab" data-panel="panel-events">Events Booking</button>
+      <button class="tab" data-panel="panel-orders">Restaurant Orders</button>
+      <button class="tab" data-panel="panel-feedback">Customer Feedback</button>
+      <button class="tab" data-panel="panel-reference">Halls &amp; Restaurants</button>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <span class="user-name" id="user-name">…</span>
+        <span>Clearance: Front Desk</span>
+      </div>
+      <button class="btn btn-ghost btn-sm btn-block" id="logout-btn">Sign out</button>
+    </div>
+  </aside>
 
-  <nav class="tabs">
-    <button class="tab active" data-panel="panel-dashboard">Dashboard</button>
-    <button class="tab" data-panel="panel-rooms">Rooms</button>
-    <button class="tab" data-panel="panel-customers">Customers</button>
-    <button class="tab" data-panel="panel-reservations">Reservations</button>
-    <button class="tab" data-panel="panel-reference">Halls &amp; Restaurants</button>
-  </nav>
-
-  <main>
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="main-content">
+    
     <!-- DASHBOARD -->
     <section id="panel-dashboard" class="panel active">
+      <div class="panel-header">
+        <h1>Dashboard</h1>
+        <div class="sub">Overview of active stays and room inventory status.</div>
+      </div>
+      
       <div class="grid grid-4" id="stat-cards"></div>
 
-      <div class="card">
+      <div class="card" style="margin-top: 2rem;">
         <div class="card-head">
           <div>
-            <h2>Current room occupancy</h2>
-            <div class="sub">Rooms currently checked in, with guest name</div>
+            <h2>Current Room Occupancy</h2>
+            <div class="sub">Rooms currently checked in, with guest details</div>
           </div>
         </div>
-        <div id="occupancy-table" class="loading">Loading…</div>
+        <div id="occupancy-table" class="loading">Loading occupancy…</div>
       </div>
+    </section>
 
+    <!-- RESERVATION REQUESTS -->
+    <section id="panel-requests" class="panel">
+      <div class="panel-header">
+        <h1>Reservation Requests</h1>
+        <div class="sub">Review, approve (assign rooms), or decline customer booking requests.</div>
+      </div>
       <div class="card">
-        <div class="card-head">
-          <div>
-            <h2>Upcoming events</h2>
-            <div class="sub">From today onward</div>
-          </div>
-        </div>
-        <div id="events-table" class="loading">Loading…</div>
+        <div class="card-head"><h2>Pending &amp; Past Requests</h2></div>
+        <div id="requests-table" class="loading">Loading requests…</div>
       </div>
     </section>
 
     <!-- ROOMS -->
     <section id="panel-rooms" class="panel">
+      <div class="panel-header">
+        <h1>Rooms &amp; Housekeeping</h1>
+        <div class="sub">Monitor room status and housekeeper assignments.</div>
+      </div>
       <div class="card">
-        <div class="card-head">
-          <div>
-            <h2>Rooms</h2>
-            <div class="sub">You can update a room's status. Rate and type changes need a manager.</div>
-          </div>
-        </div>
-        <div id="rooms-table" class="loading">Loading…</div>
+        <div class="card-head"><h2>Room Status</h2></div>
+        <div id="rooms-table" class="loading">Loading rooms…</div>
       </div>
     </section>
 
     <!-- CUSTOMERS -->
     <section id="panel-customers" class="panel">
+      <div class="panel-header">
+        <h1>Customer Directory</h1>
+        <div class="sub">Manage customer contact details.</div>
+      </div>
       <div class="card">
-        <div class="card-head">
-          <div>
-            <h2>Register a customer</h2>
-          </div>
-        </div>
+        <div class="card-head"><h2>Add Customer</h2></div>
         <form class="inline-form" id="customer-form">
-          <div class="field"><label for="c-fname">First name</label><input id="c-fname" required /></div>
-          <div class="field"><label for="c-lname">Last name</label><input id="c-lname" required /></div>
-          <div class="field"><label for="c-phone">Phone</label><input id="c-phone" maxlength="10" required /></div>
-          <button class="btn btn-gold" type="submit">Add customer</button>
+          <div class="field"><label for="cust-fname">First Name</label><input id="cust-fname" placeholder="Kwame" required /></div>
+          <div class="field"><label for="cust-lname">Last Name</label><input id="cust-lname" placeholder="Mensah" required /></div>
+          <div class="field"><label for="cust-phone">Phone Number</label><input id="cust-phone" placeholder="0246292423" required /></div>
+          <button class="btn btn-gold" type="submit">Add Customer</button>
         </form>
       </div>
 
       <div class="card">
-        <div class="card-head"><h2>All customers</h2></div>
-        <div id="customers-table" class="loading">Loading…</div>
+        <div class="card-head"><h2>Customer Directory</h2></div>
+        <div id="customers-table" class="loading">Loading customers…</div>
       </div>
     </section>
 
     <!-- RESERVATIONS -->
     <section id="panel-reservations" class="panel">
+      <div class="panel-header">
+        <h1>Reservations</h1>
+        <div class="sub">Manage check-ins, check-outs, and active reservations.</div>
+      </div>
       <div class="card">
-        <div class="card-head"><h2>New reservation</h2><div class="sub">Booked under your staff ID automatically</div></div>
+        <div class="card-head"><h2>Manual Reservation</h2></div>
         <form class="inline-form" id="reservation-form">
-          <div class="field"><label for="r-room">Room no.</label><input id="r-room" placeholder="R101" required /></div>
-          <div class="field"><label for="r-customer">Customer ID</label><input id="r-customer" placeholder="CU01" required /></div>
-          <div class="field"><label for="r-checkin">Check-in</label><input id="r-checkin" type="datetime-local" required /></div>
-          <div class="field"><label for="r-checkout">Check-out (optional)</label><input id="r-checkout" type="datetime-local" /></div>
-          <button class="btn btn-gold" type="submit">Book</button>
+          <div class="field"><label for="res-room">Room No</label><input id="res-room" placeholder="R101" required /></div>
+          <div class="field"><label for="res-cust">Customer ID</label><input id="res-cust" placeholder="CU01" required /></div>
+          <div class="field"><label for="res-checkin">Check In</label><input id="res-checkin" type="datetime-local" required /></div>
+          <div class="field"><label for="res-checkout">Check Out</label><input id="res-checkout" type="datetime-local" /></div>
+          <button class="btn btn-gold" type="submit">Create Stay</button>
         </form>
       </div>
 
       <div class="card">
-        <div class="card-head"><h2>All reservations</h2></div>
-        <div id="reservations-table" class="loading">Loading…</div>
+        <div class="card-head"><h2>Active &amp; Past Reservations</h2></div>
+        <div id="reservations-table" class="loading">Loading reservations…</div>
       </div>
     </section>
 
-    <!-- REFERENCE -->
+    <!-- EVENTS BOOKING -->
+    <section id="panel-events" class="panel">
+      <div class="panel-header">
+        <h1>Events Booking</h1>
+        <div class="sub">Host cultural celebrations, weddings, and diaspora conferences.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Schedule Event</h2></div>
+        <form class="inline-form" id="event-form">
+          <div class="field">
+            <label for="evt-type">Event Type</label>
+            <select id="evt-type" required>
+              <option value="Wedding">Wedding</option>
+              <option value="Conference">Conference</option>
+              <option value="Seminar">Seminar</option>
+              <option value="Networking Event">Networking Event</option>
+              <option value="Birthday Party">Birthday Party</option>
+            </select>
+          </div>
+          <div class="field"><label for="evt-date">Event Date</label><input id="evt-date" type="date" required /></div>
+          <div class="field"><label for="evt-duration">Duration (hrs)</label><input id="evt-duration" type="number" step="0.1" placeholder="3.5" required /></div>
+          <div class="field"><label for="evt-host">Host Customer ID</label><input id="evt-host" placeholder="CU01" required /></div>
+          <div class="field"><label for="evt-hall">Assigned Hall ID</label><input id="evt-hall" placeholder="CH01" required /></div>
+          <button class="btn btn-gold" type="submit">Schedule Event</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Scheduled Events List</h2></div>
+        <div id="events-table" class="loading">Loading events…</div>
+      </div>
+    </section>
+
+    <!-- RESTAURANT ORDERS -->
+    <section id="panel-orders" class="panel">
+      <div class="panel-header">
+        <h1>Restaurant Orders</h1>
+        <div class="sub">Place fusion food and beverage orders for dining rooms.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Place Order</h2></div>
+        <form class="inline-form" id="order-form">
+          <div class="field"><label for="ro-cust">Customer ID</label><input id="ro-cust" placeholder="CU01" required /></div>
+          <div class="field"><label for="ro-rest">Restaurant ID</label><input id="ro-rest" placeholder="RT01" required /></div>
+          <div class="field"><label for="ro-details">Order Details</label><input id="ro-details" placeholder="1x Jollof Rice, 1x Sobolo" required /></div>
+          <button class="btn btn-gold" type="submit">Place Order</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Recent Restaurant Orders</h2></div>
+        <div id="orders-table" class="loading">Loading orders…</div>
+      </div>
+    </section>
+
+    <!-- CUSTOMER FEEDBACK -->
+    <section id="panel-feedback" class="panel">
+      <div class="panel-header">
+        <h1>Customer Feedback</h1>
+        <div class="sub">Log customer ratings and remarks.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Log Feedback</h2></div>
+        <form class="inline-form" id="feedback-form">
+          <div class="field"><label for="fb-cust">Customer ID</label><input id="fb-cust" placeholder="CU01" required /></div>
+          <div class="field">
+            <label for="fb-rating">Rating</label>
+            <select id="fb-rating" required>
+              <option value="5">5 - Excellent</option>
+              <option value="4">4 - Good</option>
+              <option value="3">3 - Average</option>
+              <option value="2">2 - Poor</option>
+              <option value="1">1 - Terrible</option>
+            </select>
+          </div>
+          <div class="field" style="flex: 2;"><label for="fb-comments">Comments</label><input id="fb-comments" placeholder="Describe customer's experience" required /></div>
+          <button class="btn btn-gold" type="submit">Log Feedback</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Recent Customer Feedback</h2></div>
+        <div id="feedback-table" class="loading">Loading feedback…</div>
+      </div>
+    </section>
+
+    <!-- REFERENCE (HALLS & RESTAURANTS) -->
     <section id="panel-reference" class="panel">
+      <div class="panel-header">
+        <h1>Halls &amp; Restaurants Reference</h1>
+        <div class="sub">List of conference facilities and dining rooms.</div>
+      </div>
       <div class="grid grid-2">
         <div class="card">
-          <div class="card-head"><h2>Conference halls</h2></div>
-          <div id="halls-table" class="loading">Loading…</div>
+          <div class="card-head"><h2>Conference Halls</h2></div>
+          <div id="halls-table" class="loading">Loading halls…</div>
         </div>
         <div class="card">
           <div class="card-head"><h2>Restaurants</h2></div>
-          <div id="restaurants-table" class="loading">Loading…</div>
+          <div id="restaurants-table" class="loading">Loading restaurants…</div>
         </div>
       </div>
     </section>
   </main>
+</div>
+
+<!-- APPROVE REQUEST MODAL -->
+<div class="portal-modal-backdrop" id="approve-request-modal">
+  <div class="portal-modal-card" style="max-width: 400px;">
+    <button class="portal-close-btn" id="close-approve-modal-btn">&times;</button>
+    <div class="portal-brand">
+      Approve Request
+      <small id="approve-modal-title-token">Token</small>
+    </div>
+    <form id="approve-request-form" class="african-form">
+      <p class="form-help" style="margin-bottom:1rem;">Select an available room to assign to this stay request.</p>
+      <div class="field">
+        <label for="approve-room-select">Available Rooms</label>
+        <select id="approve-room-select" required>
+          <!-- Loaded dynamically -->
+        </select>
+      </div>
+      <button type="submit" class="btn btn-gold btn-block">Confirm Approval</button>
+    </form>
+  </div>
 </div>
 
 <script src="js/api.js"></script>

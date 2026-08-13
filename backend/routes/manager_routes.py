@@ -136,64 +136,6 @@ def add_restaurant():
     return ok_or_error({"restaurant_id": rest_id}, err)
 
 
-@manager_bp.route("/events", methods=["POST"])
-@role_required("Manager")
-def add_event():
-    body = request.get_json(silent=True) or {}
-    fields = ["event_type", "event_date", "duration", "host_id", "hall_id"]
-    if not all(body.get(f) for f in fields):
-        return jsonify({"error": f"{', '.join(fields)} are required."}), 400
-    event_id = body.get("event_id") or new_id("EV", 2)
-    _, err = run(
-        "INSERT INTO EVENT (EventID, EventType, EventDate, EventDuration, Host, HallID) "
-        "VALUES (%s,%s,%s,%s,%s,%s)",
-        (event_id, body["event_type"], body["event_date"], body["duration"],
-         body["host_id"], body["hall_id"]),
-        fetch="none",
-    )
-    return ok_or_error({"event_id": event_id}, err)
-
-
-# ---------------- Invoices & restaurant orders ----------------
-
-@manager_bp.route("/invoices", methods=["GET"])
-@role_required("Manager")
-def list_invoices():
-    data, err = run("SELECT * FROM INVOICE ORDER BY InvoiceNo")
-    return ok_or_error(data, err)
-
-
-@manager_bp.route("/invoices/<invoice_no>", methods=["PUT"])
-@role_required("Manager")
-def update_invoice(invoice_no):
-    body = request.get_json(silent=True) or {}
-    amount_paid = body.get("amount_paid")
-    if amount_paid is None:
-        return jsonify({"error": "amount_paid is required."}), 400
-    _, err = run(
-        "UPDATE INVOICE SET AmountPaid=%s WHERE InvoiceNo=%s",
-        (amount_paid, invoice_no),
-        fetch="none",
-    )
-    return ok_or_error({"invoice_no": invoice_no, "amount_paid": amount_paid}, err)
-
-
-@manager_bp.route("/restaurant-orders", methods=["GET"])
-@role_required("Manager")
-def list_restaurant_orders():
-    data, err = run(
-        """
-        SELECT ro.OrderID, ro.CustomerID,
-               CONCAT(c.CustomerFName,' ',c.CustomerLName) AS CustomerName,
-               ro.RestaurantID, r.RestaurantName, ro.InvoiceID, ro.OrderDetails
-        FROM RESTAURANT_ORDER ro
-        JOIN CUSTOMER c ON c.CustomerID = ro.CustomerID
-        JOIN RESTAURANT r ON r.RestaurantID = ro.RestaurantID
-        ORDER BY ro.OrderID
-        """
-    )
-    return ok_or_error(data, err)
-
 
 # ---------------- Reports (Phase 6 advanced queries) ----------------
 
@@ -250,3 +192,12 @@ def report_hall_utilisation():
 def report_outstanding_invoices():
     data, err = run("SELECT * FROM vw_outstanding_invoices ORDER BY BalanceDue DESC")
     return ok_or_error(data, err)
+
+
+# ---------------- Customer Feedback Management ----------------
+
+@manager_bp.route("/feedback/<feedback_id>", methods=["DELETE"])
+@role_required("Manager")
+def delete_feedback(feedback_id):
+    _, err = run("DELETE FROM CUSTOMER_FEEDBACK WHERE FeedbackID=%s", (feedback_id,), fetch="none")
+    return ok_or_error({"deleted": feedback_id}, err)

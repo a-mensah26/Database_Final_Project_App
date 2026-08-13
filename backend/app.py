@@ -9,7 +9,6 @@ from routes.manager_routes import manager_bp
 
 FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
 
-app = Flask(__name__)
 
 def create_app():
     app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path="")
@@ -50,6 +49,6 @@ def create_app():
 
 
 if __name__ == "__main__":
-    # app = create_app()
-    # app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=config.DEBUG)
-    app.run(debug = True)
+    app = create_app()
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=config.DEBUG)
+    # app.run(debug = True)

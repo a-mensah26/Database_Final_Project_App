@@ -1,11 +1,27 @@
 -- ============================================================
--- Akwaaba Hotel Reservation & Event Management System
--- 01_schema.sql — core tables (as implemented in Phases 4-6)
+-- create_tables.sql
+-- Defines all relational tables, constraints, and foreign keys.
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS HotelReservationSystem;
 USE HotelReservationSystem;
 
+-- --- Drop Tables if they exist (ordered to avoid FK violations) ---
+DROP TABLE IF EXISTS RESERVATION_REQUEST;
+DROP TABLE IF EXISTS CUSTOMER_FEEDBACK;
+DROP TABLE IF EXISTS RESTAURANT_ORDER;
+DROP TABLE IF EXISTS INVOICE;
+DROP TABLE IF EXISTS EVENT;
+DROP TABLE IF EXISTS RESERVATION;
+DROP TABLE IF EXISTS ROOM;
+DROP TABLE IF EXISTS RESTAURANT;
+DROP TABLE IF EXISTS CONFERENCE_HALL;
+DROP TABLE IF EXISTS CUSTOMER;
+DROP TABLE IF EXISTS FRONTDESK;
+DROP TABLE IF EXISTS HOUSEKEEPING;
+DROP TABLE IF EXISTS APP_USER;
+DROP TABLE IF EXISTS STAFF;
+
+-- ---------------- STAFF TABLE ----------------
 CREATE TABLE STAFF (
     StaffID VARCHAR(5) PRIMARY KEY,
     StaffFName VARCHAR(20) NOT NULL,
@@ -13,6 +29,7 @@ CREATE TABLE STAFF (
     StaffRole ENUM('Housekeeping','Front Desk') NOT NULL
 );
 
+-- ---------------- HOUSEKEEPING TABLE ----------------
 CREATE TABLE HOUSEKEEPING (
     StaffID VARCHAR(5) PRIMARY KEY,
     Shift ENUM('Morning','Afternoon','Evening') NOT NULL,
@@ -21,6 +38,7 @@ CREATE TABLE HOUSEKEEPING (
         REFERENCES STAFF(StaffID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- ---------------- FRONTDESK TABLE ----------------
 CREATE TABLE FRONTDESK (
     StaffID VARCHAR(5) PRIMARY KEY,
     Shift ENUM('Morning','Afternoon','Evening') NOT NULL,
@@ -28,6 +46,7 @@ CREATE TABLE FRONTDESK (
         REFERENCES STAFF(StaffID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- ---------------- CUSTOMER TABLE ----------------
 CREATE TABLE CUSTOMER (
     CustomerID VARCHAR(5) PRIMARY KEY,
     CustomerFName VARCHAR(20) NOT NULL,
@@ -35,18 +54,21 @@ CREATE TABLE CUSTOMER (
     PhoneNumber VARCHAR(10) NOT NULL
 );
 
+-- ---------------- CONFERENCE_HALL TABLE ----------------
 CREATE TABLE CONFERENCE_HALL (
     HallID VARCHAR(5) PRIMARY KEY,
     HallName VARCHAR(50) NOT NULL,
     Capacity INT NOT NULL
 );
 
+-- ---------------- RESTAURANT TABLE ----------------
 CREATE TABLE RESTAURANT (
     RestaurantID VARCHAR(5) PRIMARY KEY,
     RestaurantName VARCHAR(50) NOT NULL,
     SeatingCapacity INT NOT NULL
 );
 
+-- ---------------- ROOM TABLE ----------------
 CREATE TABLE ROOM (
     RoomNo VARCHAR(5) PRIMARY KEY,
     RoomType VARCHAR(30) NOT NULL,
@@ -57,6 +79,7 @@ CREATE TABLE ROOM (
         REFERENCES HOUSEKEEPING(StaffID) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
+-- ---------------- RESERVATION TABLE ----------------
 CREATE TABLE RESERVATION (
     ReservationID VARCHAR(5) PRIMARY KEY,
     RoomID VARCHAR(5) NOT NULL,
@@ -72,6 +95,7 @@ CREATE TABLE RESERVATION (
         REFERENCES FRONTDESK(StaffID) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+-- ---------------- EVENT TABLE ----------------
 CREATE TABLE EVENT (
     EventID VARCHAR(5) PRIMARY KEY,
     EventType ENUM('Wedding','Conference','Seminar','Networking Event','Birthday Party') NOT NULL,
@@ -85,6 +109,7 @@ CREATE TABLE EVENT (
         REFERENCES CUSTOMER(CustomerID) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+-- ---------------- INVOICE TABLE ----------------
 CREATE TABLE INVOICE (
     InvoiceNo VARCHAR(5) PRIMARY KEY,
     ReservationID VARCHAR(5),
@@ -97,6 +122,7 @@ CREATE TABLE INVOICE (
         REFERENCES CUSTOMER(CustomerID) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+-- ---------------- RESTAURANT_ORDER TABLE ----------------
 CREATE TABLE RESTAURANT_ORDER (
     OrderID VARCHAR(5) PRIMARY KEY,
     CustomerID VARCHAR(5) NOT NULL,
@@ -111,6 +137,7 @@ CREATE TABLE RESTAURANT_ORDER (
         REFERENCES INVOICE(InvoiceNo) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
+-- ---------------- CUSTOMER_FEEDBACK TABLE ----------------
 CREATE TABLE CUSTOMER_FEEDBACK (
     FeedbackID VARCHAR(5) PRIMARY KEY,
     CustomerID VARCHAR(5) NOT NULL,
@@ -121,6 +148,7 @@ CREATE TABLE CUSTOMER_FEEDBACK (
         REFERENCES CUSTOMER(CustomerID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- ---------------- RESERVATION_REQUEST TABLE ----------------
 CREATE TABLE RESERVATION_REQUEST (
     RequestToken VARCHAR(6) PRIMARY KEY,
     CustomerID VARCHAR(5) NOT NULL,
@@ -136,3 +164,14 @@ CREATE TABLE RESERVATION_REQUEST (
     CONSTRAINT fk_req_staff FOREIGN KEY (StaffID) REFERENCES FRONTDESK(StaffID) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
+-- ---------------- APP_USER TABLE ----------------
+CREATE TABLE APP_USER (
+    UserID VARCHAR(5) PRIMARY KEY,
+    Username VARCHAR(30) NOT NULL UNIQUE,
+    PasswordHash VARCHAR(255) NOT NULL,
+    FullName VARCHAR(41) NOT NULL,
+    Role ENUM('Front Desk','Manager') NOT NULL,
+    StaffID VARCHAR(5),
+    CONSTRAINT fk_appuser_staff FOREIGN KEY (StaffID)
+        REFERENCES STAFF(StaffID) ON DELETE SET NULL ON UPDATE CASCADE
+);

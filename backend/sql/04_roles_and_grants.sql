@@ -16,7 +16,16 @@
 -- ============================================================
 
 CREATE USER IF NOT EXISTS 'hotel_auth'@'localhost' IDENTIFIED BY 'CHANGE_ME_auth';
-GRANT SELECT ON HotelReservationSystem.APP_USER TO 'hotel_auth'@'localhost';
+GRANT SELECT, INSERT ON HotelReservationSystem.APP_USER TO 'hotel_auth'@'localhost';
+GRANT SELECT, INSERT ON HotelReservationSystem.STAFF TO 'hotel_auth'@'localhost';
+GRANT SELECT, INSERT ON HotelReservationSystem.FRONTDESK TO 'hotel_auth'@'localhost';
+GRANT SELECT ON HotelReservationSystem.ROOM TO 'hotel_auth'@'localhost';
+GRANT SELECT ON HotelReservationSystem.EVENT TO 'hotel_auth'@'localhost';
+GRANT SELECT, INSERT ON HotelReservationSystem.CUSTOMER TO 'hotel_auth'@'localhost';
+GRANT SELECT ON HotelReservationSystem.CONFERENCE_HALL TO 'hotel_auth'@'localhost';
+GRANT SELECT ON HotelReservationSystem.vw_available_rooms TO 'hotel_auth'@'localhost';
+GRANT SELECT ON HotelReservationSystem.vw_upcoming_events TO 'hotel_auth'@'localhost';
+GRANT SELECT, INSERT, UPDATE ON HotelReservationSystem.RESERVATION_REQUEST TO 'hotel_auth'@'localhost';
 
 CREATE USER IF NOT EXISTS 'hotel_front_desk'@'localhost' IDENTIFIED BY 'CHANGE_ME_frontdesk';
 CREATE USER IF NOT EXISTS 'hotel_manager'@'localhost' IDENTIFIED BY 'CHANGE_ME_manager';
@@ -24,11 +33,15 @@ CREATE USER IF NOT EXISTS 'hotel_manager'@'localhost' IDENTIFIED BY 'CHANGE_ME_m
 -- ---- Front Desk (from Phase 6) ----
 GRANT SELECT, INSERT, UPDATE ON HotelReservationSystem.CUSTOMER TO 'hotel_front_desk'@'localhost';
 GRANT SELECT, INSERT, UPDATE, DELETE ON HotelReservationSystem.RESERVATION TO 'hotel_front_desk'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON HotelReservationSystem.RESERVATION_REQUEST TO 'hotel_front_desk'@'localhost';
 GRANT SELECT ON HotelReservationSystem.ROOM TO 'hotel_front_desk'@'localhost';
 GRANT UPDATE (RoomStatus) ON HotelReservationSystem.ROOM TO 'hotel_front_desk'@'localhost';
+GRANT SELECT ON HotelReservationSystem.STAFF TO 'hotel_front_desk'@'localhost';
 GRANT SELECT ON HotelReservationSystem.CONFERENCE_HALL TO 'hotel_front_desk'@'localhost';
 GRANT SELECT ON HotelReservationSystem.RESTAURANT TO 'hotel_front_desk'@'localhost';
-GRANT SELECT ON HotelReservationSystem.EVENT TO 'hotel_front_desk'@'localhost';
+GRANT SELECT, INSERT ON HotelReservationSystem.EVENT TO 'hotel_front_desk'@'localhost';
+GRANT SELECT, INSERT, UPDATE ON HotelReservationSystem.RESTAURANT_ORDER TO 'hotel_front_desk'@'localhost';
+GRANT SELECT, INSERT ON HotelReservationSystem.CUSTOMER_FEEDBACK TO 'hotel_front_desk'@'localhost';
 GRANT SELECT ON HotelReservationSystem.vw_current_room_occupancy TO 'hotel_front_desk'@'localhost';
 GRANT SELECT ON HotelReservationSystem.vw_available_rooms TO 'hotel_front_desk'@'localhost';
 GRANT SELECT ON HotelReservationSystem.vw_upcoming_events TO 'hotel_front_desk'@'localhost';

@@ -10,6 +10,7 @@ let ME = null;
 
   loadDashboard();
   loadReports();
+  loadRequests();
   loadRooms();
   loadCustomers();
   loadReservations();
@@ -17,8 +18,9 @@ let ME = null;
   loadHalls();
   loadRestaurants();
   loadEvents();
-  loadInvoices();
   loadOrders();
+  loadInvoices();
+  loadFeedback();
 })();
 
 function wireLogout() {
@@ -31,302 +33,422 @@ function wireLogout() {
 // ---------------- Dashboard ----------------
 async function loadDashboard() {
   try {
-    const [rate, available, occ] = await Promise.all([
-      api.get("/dashboard/occupancy-rate"),
-      api.get("/dashboard/available-rooms"),
-      api.get("/dashboard/occupancy"),
-    ]);
-    const occupiedNow = occ.filter((r) => r.RoomStatus === "Occupied").length;
-    document.getElementById("stat-cards").innerHTML = `
-      <div class="stat-card"><div class="label">Occupancy rate</div><div class="value">${rate.occupied_pct}%</div></div>
-      <div class="stat-card"><div class="label">Rooms occupied</div><div class="value">${occupiedNow}</div></div>
-      <div class="stat-card"><div class="label">Rooms available</div><div class="value">${available.length}</div></div>
-      <div class="stat-card"><div class="label">Vacancy rate</div><div class="value">${rate.vacant_pct}%</div></div>
+    const stats = await api.get("/dashboard/stats");
+    const container = document.getElementById("stat-cards");
+    container.innerHTML = `
+      <div class="card stat-card">
+        <div class="num">${stats.unoccupied_rooms}</div>
+        <div class="label">Vacant Rooms</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num">${stats.occupied_rooms}</div>
+        <div class="label">Occupied Rooms</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num">${stats.occupancy_rate}%</div>
+        <div class="label">Occupancy Rate</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num">${stats.upcoming_events_count}</div>
+        <div class="label">Upcoming Events</div>
+      </div>
     `;
-    renderTable(document.getElementById("occupancy-table"), [
-      { label: "Room", key: "RoomNo" },
+  } catch (err) {
+    showToast("Failed to load metrics.", true);
+  }
+
+  try {
+    const occupancy = await api.get("/dashboard/occupancy");
+    const container = document.getElementById("occupancy-table");
+    renderTable(container, [
+      { label: "Room No", key: "RoomNo", render: (r) => `<span class="mono">${r.RoomNo}</span>` },
       { label: "Type", key: "RoomType" },
-      { label: "Status", render: (r) => statusPill(r.RoomStatus) },
-      { label: "Guest", render: (r) => r.GuestName || "—" },
-      { label: "Check-in", render: (r) => fmtDate(r.CheckIn) },
-    ], occ, { emptyText: "No rooms found." });
-  } catch (e) { showToast(e.message, true); }
+      { label: "Guest Name", render: (r) => r.GuestName || `<span class="text-muted">—</span>` },
+      { label: "Check In", render: (r) => r.CheckIn ? new Date(r.CheckIn).toLocaleString() : "—" },
+      {
+        label: "Status",
+        render: (r) => {
+          const isVacant = r.RoomStatus === "Vacant";
+          return `<span class="pill ${isVacant ? "pill-vacant" : "pill-occupied"}">${r.RoomStatus}</span>`;
+        }
+      }
+    ], occupancy, { emptyText: "No rooms occupied." });
+  } catch (err) {
+    document.getElementById("occupancy-table").innerHTML = `<div class="empty-state" style="color:var(--danger)">Error loading occupancy data.</div>`;
+  }
+}
+
+// ---------------- Reservation Requests ----------------
+let activeApproveToken = null;
+let allAvailableRoomsList = [];
+
+async function loadRequests() {
+  const container = document.getElementById("requests-table");
+  try {
+    const requests = await api.get("/requests");
+    allAvailableRoomsList = await api.get("/public/rooms");
+
+    renderTable(container, [
+      { label: "Token", key: "RequestToken", render: (r) => `<span class="mono font-bold">${r.RequestToken}</span>` },
+      { label: "Guest Name", render: (r) => `${r.CustomerFName} ${r.CustomerLName}` },
+      { label: "Phone", key: "PhoneNumber" },
+      { label: "Room Type", key: "RoomType" },
+      { label: "Check In", render: (r) => new Date(r.CheckIn).toLocaleString() },
+      { label: "Check Out", render: (r) => new Date(r.CheckOut).toLocaleString() },
+      {
+        label: "Status",
+        render: (r) => {
+          if (r.Status === "Pending") return `<span class="status-badge pending">Pending</span>`;
+          if (r.Status === "Approved") return `<span class="status-badge approved">Approved (Room ${r.RoomNo})</span>`;
+          return `<span class="status-badge declined">Declined</span>`;
+        }
+      },
+      {
+        label: "Actions",
+        render: (r) => {
+          if (r.Status !== "Pending") return `<span class="text-muted">—</span>`;
+          return `
+            <div class="actions">
+              <button class="btn btn-gold btn-sm" onclick="openApproveModal('${r.RequestToken}', '${r.RoomType}')">Approve</button>
+              <button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="declineRequest('${r.RequestToken}')">Decline</button>
+            </div>
+          `;
+        }
+      }
+    ], requests, { emptyText: "No booking requests found." });
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state" style="color:var(--danger)">Error loading requests: ${err.message}</div>`;
+  }
+}
+
+function openApproveModal(token, roomType) {
+  activeApproveToken = token;
+  document.getElementById("approve-modal-title-token").textContent = `Token: ${token} (${roomType})`;
+
+  const matchingRooms = allAvailableRoomsList.filter(r => r.RoomType === roomType);
+  const select = document.getElementById("approve-room-select");
+  select.innerHTML = "";
+
+  if (matchingRooms.length === 0) {
+    select.innerHTML = `<option value="">No available rooms of type ${roomType}</option>`;
+  } else {
+    matchingRooms.forEach(room => {
+      const opt = document.createElement("option");
+      opt.value = room.RoomNo;
+      opt.textContent = `Room ${room.RoomNo} (GH₵ ${room.RoomRate}/night)`;
+      select.appendChild(opt);
+    });
+  }
+
+  document.getElementById("approve-request-modal").classList.add("open");
+}
+
+async function declineRequest(token) {
+  if (!confirm(`Are you sure you want to decline request ${token}?`)) return;
+  try {
+    await api.put(`/requests/${token}/decline`);
+    showToast(`Request ${token} declined.`);
+    loadRequests();
+  } catch (err) {
+    showToast(err.message, true);
+  }
 }
 
 // ---------------- Reports ----------------
 async function loadReports() {
+  const roomsCont = document.getElementById("report-rooms-table");
+  const invoicesCont = document.getElementById("report-invoices-table");
+  const workloadCont = document.getElementById("report-workload-table");
+  const hallCont = document.getElementById("report-hall-table");
+
   try {
-    const inv = await api.get("/reports/room-inventory");
-    renderTable(document.getElementById("rpt-inventory"), [
+    const data = await api.get("/reports/room-inventory");
+    renderTable(roomsCont, [
       { label: "Type", key: "RoomType" },
-      { label: "Rooms", key: "TotalRooms" },
-      { label: "Avg rate", render: (r) => fmtMoney(r.AvgRate) },
+      { label: "Total Rooms", key: "TotalRooms" },
+      { label: "Avg Rate", render: (r) => fmtMoney(r.AvgRate) },
       { label: "Occupied", key: "OccupiedCount" },
-      { label: "Vacant", key: "VacantCount" },
-    ], inv);
-  } catch (e) { showToast(e.message, true); }
+      { label: "Vacant", key: "VacantCount" }
+    ], data);
+  } catch (e) { roomsCont.innerHTML = "Error."; }
 
   try {
-    const wl = await api.get("/reports/frontdesk-workload");
-    renderTable(document.getElementById("rpt-workload"), [
-      { label: "Staff", key: "StaffName" },
+    const data = await api.get("/reports/outstanding-invoices");
+    renderTable(invoicesCont, [
+      { label: "Invoice No", key: "InvoiceNo", render: (r) => `<span class="mono">${r.InvoiceNo}</span>` },
+      { label: "Customer", render: (r) => `${r.CustomerName} (${r.CustomerID})` },
+      { label: "Payable", render: (r) => fmtMoney(r.AmountPayable) },
+      { label: "Balance Due", render: (r) => fmtMoney(r.BalanceDue) }
+    ], data, { emptyText: "No outstanding balances!" });
+  } catch (e) { invoicesCont.innerHTML = "Error."; }
+
+  try {
+    const data = await api.get("/reports/frontdesk-workload");
+    renderTable(workloadCont, [
+      { label: "Staff ID", key: "StaffID", render: (r) => `<span class="mono">${r.StaffID}</span>` },
+      { label: "Staff Name", key: "StaffName" },
       { label: "Shift", key: "Shift" },
-      { label: "Handled", key: "ReservationsHandled" },
-    ], wl);
-  } catch (e) { showToast(e.message, true); }
+      { label: "Stays Handled", key: "ReservationsHandled" }
+    ], data);
+  } catch (e) { workloadCont.innerHTML = "Error."; }
 
   try {
-    const halls = await api.get("/reports/hall-utilisation");
-    renderTable(document.getElementById("rpt-halls"), [
-      { label: "Hall", key: "HallName" },
-      { label: "Capacity", key: "Capacity" },
-      { label: "Events", key: "EventsHosted" },
-      { label: "Hours booked", key: "TotalHoursBooked" },
-    ], halls);
-  } catch (e) { showToast(e.message, true); }
-
-  try {
-    const out = await api.get("/reports/outstanding-invoices");
-    renderTable(document.getElementById("rpt-outstanding"), [
-      { label: "Invoice", render: (r) => `<span class="mono">${r.InvoiceNo}</span>` },
-      { label: "Customer", key: "CustomerName" },
-      { label: "Balance due", render: (r) => `<span class="dot dot-outstanding"></span>${fmtMoney(r.BalanceDue)}` },
-    ], out, { emptyText: "No outstanding balances." });
-  } catch (e) { showToast(e.message, true); }
+    const data = await api.get("/reports/hall-utilisation");
+    renderTable(hallCont, [
+      { label: "Hall ID", key: "HallID", render: (r) => `<span class="mono">${r.HallID}</span>` },
+      { label: "Hall Name", key: "HallName" },
+      { label: "Events Hosted", key: "EventsHosted" },
+      { label: "Total Hours Booked", render: (r) => `${r.TotalHoursBooked} hrs` }
+    ], data);
+  } catch (e) { hallCont.innerHTML = "Error."; }
 }
 
 // ---------------- Rooms ----------------
 async function loadRooms() {
+  const container = document.getElementById("rooms-table");
   try {
     const rooms = await api.get("/rooms");
-    renderTable(document.getElementById("rooms-table"), [
-      { label: "Room", key: "RoomNo" },
-      { label: "Type", render: (r) => `<input class="mono" style="width:100px" value="${r.RoomType}" data-edit-type="${r.RoomNo}" />` },
-      { label: "Rate", render: (r) => `<input type="number" step="0.01" style="width:90px" value="${r.RoomRate}" data-edit-rate="${r.RoomNo}" />` },
-      { label: "Status", render: (r) => statusPill(r.RoomStatus) },
+    renderTable(container, [
+      { label: "Room No", key: "RoomNo", render: (r) => `<span class="mono">${r.RoomNo}</span>` },
+      { label: "Type", key: "RoomType" },
+      { label: "Rate per Night", render: (r) => fmtMoney(r.RoomRate) },
       {
-        label: "", render: (r) => `
-          <button class="btn btn-ghost btn-sm" data-save="${r.RoomNo}">Save</button>
-          <button class="btn btn-ghost btn-sm" data-toggle="${r.RoomNo}" data-current="${r.RoomStatus}">
-            Mark ${r.RoomStatus === "Vacant" ? "Occupied" : "Vacant"}</button>`,
+        label: "Status",
+        render: (r) => {
+          const isVacant = r.RoomStatus === "Vacant";
+          return `<span class="pill ${isVacant ? "pill-vacant" : "pill-occupied"}">${r.RoomStatus}</span>`;
+        }
       },
-    ], rooms, { emptyText: "No rooms found." });
-
-    document.querySelectorAll("[data-save]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const roomNo = btn.dataset.save;
-        const type = document.querySelector(`[data-edit-type="${roomNo}"]`).value;
-        const rate = document.querySelector(`[data-edit-rate="${roomNo}"]`).value;
-        try {
-          await api.put(`/rooms/${roomNo}`, { room_type: type, rate });
-          showToast(`${roomNo} updated.`);
-          loadRooms();
-        } catch (e) { showToast(e.message, true); }
-      });
-    });
-    document.querySelectorAll("[data-toggle]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const roomNo = btn.dataset.toggle;
-        const next = btn.dataset.current === "Vacant" ? "Occupied" : "Vacant";
-        try {
-          await api.patch(`/rooms/${roomNo}/status`, { status: next });
-          showToast(`${roomNo} marked ${next}.`);
-          loadRooms();
-          loadDashboard();
-        } catch (e) { showToast(e.message, true); }
-      });
-    });
-  } catch (e) { showToast(e.message, true); }
+      { label: "Assigned Housekeeper", render: (r) => r.HousekeeperName || `<span class="text-muted">Unassigned</span>` }
+    ], rooms, { emptyText: "No rooms defined." });
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state" style="color:var(--danger)">Error loading rooms.</div>`;
+  }
 }
 
 // ---------------- Customers ----------------
 async function loadCustomers() {
+  const container = document.getElementById("customers-table");
   try {
-    const customers = await api.get("/customers");
-    renderTable(document.getElementById("customers-table"), [
-      { label: "ID", render: (r) => `<span class="mono">${r.CustomerID}</span>` },
-      { label: "First name", key: "CustomerFName" },
-      { label: "Last name", key: "CustomerLName" },
-      { label: "Phone", render: (r) => `<span class="mono">${r.PhoneNumber}</span>` },
-      { label: "", render: (r) => `<button class="btn btn-danger btn-sm" data-del-customer="${r.CustomerID}">Delete</button>` },
-    ], customers, { emptyText: "No customers yet." });
-
-    document.querySelectorAll("[data-del-customer]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        if (!confirm("Delete this customer? This can't be undone.")) return;
-        try {
-          await api.del(`/customers/${btn.dataset.delCustomer}`);
-          showToast("Customer deleted.");
-          loadCustomers();
-        } catch (e) { showToast(e.message, true); }
-      });
-    });
-  } catch (e) { showToast(e.message, true); }
+    const custs = await api.get("/customers");
+    renderTable(container, [
+      { label: "Customer ID", key: "CustomerID", render: (r) => `<span class="mono">${r.CustomerID}</span>` },
+      { label: "First Name", key: "CustomerFName" },
+      { label: "Last Name", key: "CustomerLName" },
+      { label: "Phone Number", key: "PhoneNumber" }
+    ], custs, { emptyText: "No customers in database." });
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state" style="color:var(--danger)">Error loading customers.</div>`;
+  }
 }
 
 // ---------------- Reservations ----------------
 async function loadReservations() {
+  const container = document.getElementById("reservations-table");
   try {
-    const reservations = await api.get("/reservations");
-    renderTable(document.getElementById("reservations-table"), [
-      { label: "ID", render: (r) => `<span class="mono">${r.ReservationID}</span>` },
-      { label: "Room", key: "RoomID" },
-      { label: "Customer", key: "CustomerName" },
-      { label: "Staff", key: "StaffID" },
-      { label: "Check-in", render: (r) => fmtDate(r.CheckIn) },
-      { label: "Check-out", render: (r) => (r.CheckOut ? fmtDate(r.CheckOut) : "Currently checked in") },
+    const resList = await api.get("/reservations");
+    renderTable(container, [
+      { label: "ID", key: "ReservationID", render: (r) => `<span class="mono font-bold">${r.ReservationID}</span>` },
+      { label: "Room No", key: "RoomID", render: (r) => `<span class="mono">${r.RoomID}</span>` },
+      { label: "Guest Name", render: (r) => `${r.CustomerFName} ${r.CustomerLName} (${r.CustomerID})` },
+      { label: "Check In", render: (r) => new Date(r.CheckIn).toLocaleString() },
+      { label: "Check Out", render: (r) => r.CheckOut ? new Date(r.CheckOut).toLocaleString() : `<span class="pill pill-occupied">Stay Active</span>` },
       {
-        label: "", render: (r) => (r.CheckOut
-          ? `<button class="btn btn-danger btn-sm" data-del-res="${r.ReservationID}" disabled title="Completed bookings can't be deleted">Delete</button>`
-          : `<button class="btn btn-ghost btn-sm" data-checkout="${r.ReservationID}">Check out</button>
-             <button class="btn btn-danger btn-sm" data-del-res="${r.ReservationID}">Delete</button>`),
-      },
-    ], reservations, { emptyText: "No reservations yet." });
+        label: "Actions",
+        render: (r) => {
+          if (r.CheckOut) return `<span class="text-muted">Checked out</span>`;
+          return `<button class="btn btn-primary btn-sm" onclick="checkout('${r.ReservationID}')">Check out</button>`;
+        }
+      }
+    ], resList, { emptyText: "No reservations found." });
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state" style="color:var(--danger)">Error loading reservations.</div>`;
+  }
+}
 
-    document.querySelectorAll("[data-checkout]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        try {
-          await api.put(`/reservations/${btn.dataset.checkout}/checkout`, {
-            check_out: new Date().toISOString().slice(0, 19).replace("T", " "),
-          });
-          showToast("Guest checked out.");
-          loadReservations(); loadRooms(); loadDashboard();
-        } catch (e) { showToast(e.message, true); }
-      });
+async function checkout(resId) {
+  if (!confirm(`Check out guest from reservation ${resId}?`)) return;
+  try {
+    await api.put(`/reservations/${resId}/checkout`, {
+      check_out: new Date().toISOString().slice(0, 19).replace('T', ' ')
     });
-    document.querySelectorAll("[data-del-res]:not([disabled])").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        if (!confirm("Delete this reservation?")) return;
-        try {
-          await api.del(`/reservations/${btn.dataset.delRes}`);
-          showToast("Reservation deleted.");
-          loadReservations();
-        } catch (e) { showToast(e.message, true); }
-      });
-    });
-  } catch (e) { showToast(e.message, true); }
+    showToast("Guest checked out.");
+    loadReservations();
+    loadRooms();
+    loadDashboard();
+    loadReports();
+    loadInvoices();
+  } catch (err) {
+    showToast(err.message, true);
+  }
 }
 
 // ---------------- Staff ----------------
 async function loadStaff() {
+  const container = document.getElementById("staff-table");
   try {
     const staff = await api.get("/staff");
-    renderTable(document.getElementById("staff-table"), [
-      { label: "ID", render: (r) => `<span class="mono">${r.StaffID}</span>` },
-      { label: "Name", key: "StaffName" },
-      { label: "Role", key: "StaffRole" },
+    renderTable(container, [
+      { label: "Staff ID", key: "StaffID", render: (r) => `<span class="mono">${r.StaffID}</span>` },
+      { label: "Name", render: (r) => `${r.StaffFName} ${r.StaffLName}` },
+      { label: "Role/Subtype", key: "StaffRole" },
       { label: "Shift", render: (r) => r.Shift || "—" },
-      { label: "Floor", render: (r) => (r.AssignedFloor ?? "—") },
-      { label: "", render: (r) => `<button class="btn btn-danger btn-sm" data-del-staff="${r.StaffID}">Delete</button>` },
-    ], staff, { emptyText: "No staff yet." });
-
-    document.querySelectorAll("[data-del-staff]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        if (!confirm("Delete this staff member?")) return;
-        try {
-          await api.del(`/staff/${btn.dataset.delStaff}`);
-          showToast("Staff member removed.");
-          loadStaff();
-        } catch (e) { showToast(e.message, true); }
-      });
-    });
-  } catch (e) { showToast(e.message, true); }
+      { label: "Floor", render: (r) => r.AssignedFloor !== null ? r.AssignedFloor : "—" }
+    ], staff, { emptyText: "No staff registered." });
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state" style="color:var(--danger)">Error loading staff.</div>`;
+  }
 }
 
-// ---------------- Halls / Restaurants ----------------
+// ---------------- Halls & Restaurants ----------------
 async function loadHalls() {
+  const container = document.getElementById("halls-table");
   try {
     const halls = await api.get("/conference-halls");
-    renderTable(document.getElementById("halls-table"), [
-      { label: "ID", render: (r) => `<span class="mono">${r.HallID}</span>` },
+    renderTable(container, [
+      { label: "Hall ID", key: "HallID", render: (r) => `<span class="mono">${r.HallID}</span>` },
       { label: "Name", key: "HallName" },
-      { label: "Capacity", key: "Capacity" },
-    ], halls, { emptyText: "No halls yet." });
-  } catch (e) { showToast(e.message, true); }
+      { label: "Capacity", key: "Capacity" }
+    ], halls);
+  } catch (err) { container.innerHTML = "Error."; }
 }
 
 async function loadRestaurants() {
+  const container = document.getElementById("restaurants-table");
   try {
-    const restaurants = await api.get("/restaurants");
-    renderTable(document.getElementById("restaurants-table"), [
-      { label: "ID", render: (r) => `<span class="mono">${r.RestaurantID}</span>` },
+    const rests = await api.get("/restaurants");
+    renderTable(container, [
+      { label: "Restaurant ID", key: "RestaurantID", render: (r) => `<span class="mono">${r.RestaurantID}</span>` },
       { label: "Name", key: "RestaurantName" },
-      { label: "Seats", key: "SeatingCapacity" },
-    ], restaurants, { emptyText: "No restaurants yet." });
-  } catch (e) { showToast(e.message, true); }
+      { label: "Capacity", key: "SeatingCapacity" }
+    ], rests);
+  } catch (err) { container.innerHTML = "Error."; }
 }
 
 // ---------------- Events ----------------
 async function loadEvents() {
+  const container = document.getElementById("events-table");
   try {
     const events = await api.get("/events");
-    renderTable(document.getElementById("events-table"), [
-      { label: "ID", render: (r) => `<span class="mono">${r.EventID}</span>` },
-      { label: "Type", key: "EventType" },
-      { label: "Date", render: (r) => fmtDate(r.EventDate) },
-      { label: "Duration (hrs)", key: "EventDuration" },
+    renderTable(container, [
+      { label: "Event ID", key: "EventID", render: (r) => `<span class="mono">${r.EventID}</span>` },
+      { label: "Event Type", key: "EventType" },
+      { label: "Date", render: (r) => new Date(r.EventDate).toLocaleDateString() },
+      { label: "Duration", render: (r) => `${r.EventDuration} hrs` },
       { label: "Hall", key: "HallName" },
-      { label: "Host", key: "HostName" },
+      { label: "Host Name", key: "HostName" }
     ], events, { emptyText: "No events scheduled." });
-  } catch (e) { showToast(e.message, true); }
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state" style="color:var(--danger)">Error loading events.</div>`;
+  }
 }
 
-// ---------------- Invoices / Orders ----------------
-async function loadInvoices() {
-  try {
-    const invoices = await api.get("/invoices");
-    renderTable(document.getElementById("invoices-table"), [
-      { label: "Invoice", render: (r) => `<span class="mono">${r.InvoiceNo}</span>` },
-      { label: "Customer", key: "CustomerID" },
-      { label: "Payable", render: (r) => fmtMoney(r.AmountPayable) },
-      {
-        label: "Paid", render: (r) => `<input type="number" step="0.01" style="width:100px" value="${r.AmountPaid}" data-edit-paid="${r.InvoiceNo}" />`,
-      },
-      { label: "", render: (r) => `<button class="btn btn-ghost btn-sm" data-save-invoice="${r.InvoiceNo}">Save</button>` },
-    ], invoices, { emptyText: "No invoices yet." });
-
-    document.querySelectorAll("[data-save-invoice]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const invNo = btn.dataset.saveInvoice;
-        const paid = document.querySelector(`[data-edit-paid="${invNo}"]`).value;
-        try {
-          await api.put(`/invoices/${invNo}`, { amount_paid: paid });
-          showToast(`${invNo} updated.`);
-          loadInvoices();
-          loadReports();
-        } catch (e) { showToast(e.message, true); }
-      });
-    });
-  } catch (e) { showToast(e.message, true); }
-}
-
+// ---------------- Restaurant Orders ----------------
 async function loadOrders() {
+  const container = document.getElementById("orders-table");
   try {
     const orders = await api.get("/restaurant-orders");
-    renderTable(document.getElementById("orders-table"), [
-      { label: "Order", render: (r) => `<span class="mono">${r.OrderID}</span>` },
-      { label: "Customer", key: "CustomerName" },
+    renderTable(container, [
+      { label: "Order ID", key: "OrderID", render: (r) => `<span class="mono">${r.OrderID}</span>` },
+      { label: "Guest Name", render: (r) => `${r.CustomerName} (${r.CustomerID})` },
       { label: "Restaurant", key: "RestaurantName" },
-      { label: "Invoice", render: (r) => r.InvoiceID || "—" },
-      { label: "Details", key: "OrderDetails" },
-    ], orders, { emptyText: "No orders yet." });
-  } catch (e) { showToast(e.message, true); }
+      { label: "Order Details", key: "OrderDetails" }
+    ], orders, { emptyText: "No orders placed." });
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state" style="color:var(--danger)">Error loading orders.</div>`;
+  }
 }
 
-// ---------------- Forms ----------------
+// ---------------- Invoices ----------------
+async function loadInvoices() {
+  const container = document.getElementById("invoices-table");
+  try {
+    const invoices = await api.get("/invoices");
+    renderTable(container, [
+      { label: "Invoice No", key: "InvoiceNo", render: (r) => `<span class="mono font-bold">${r.InvoiceNo}</span>` },
+      { label: "Guest ID", key: "CustomerID", render: (r) => `<span class="mono">${r.CustomerID}</span>` },
+      { label: "Amount Payable", render: (r) => fmtMoney(r.AmountPayable) },
+      { label: "Amount Paid", render: (r) => fmtMoney(r.AmountPaid) },
+      {
+        label: "Actions",
+        render: (r) => {
+          const isPaid = parseFloat(r.AmountPaid) >= parseFloat(r.AmountPayable);
+          if (isPaid) return `<span class="status-badge approved">Fully Paid</span>`;
+          return `<button class="btn btn-primary btn-sm" onclick="receivePayment('${r.InvoiceNo}', '${r.AmountPayable}', '${r.AmountPaid}')">Record Payment</button>`;
+        }
+      }
+    ], invoices, { emptyText: "No invoices logged." });
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state" style="color:var(--danger)">Error loading invoices: Managers only.</div>`;
+  }
+}
+
+async function receivePayment(invNo, payable, currentPaid) {
+  const balance = parseFloat(payable) - parseFloat(currentPaid);
+  const amountStr = prompt(`Outstanding balance is GH₵ ${balance.toFixed(2)}. Enter payment amount to record:`, balance.toFixed(2));
+  if (amountStr === null) return;
+  const payVal = parseFloat(amountStr);
+  if (isNaN(payVal) || payVal <= 0) {
+    showToast("Invalid payment amount.", true);
+    return;
+  }
+  const newPaid = parseFloat(currentPaid) + payVal;
+  try {
+    await api.put(`/invoices/${invNo}`, { amount_paid: newPaid });
+    showToast(`Payment of GH₵ ${payVal} recorded.`);
+    loadInvoices();
+    loadReports();
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+// ---------------- Feedback ----------------
+async function loadFeedback() {
+  const container = document.getElementById("feedback-table");
+  try {
+    const feedbacks = await api.get("/feedback");
+    renderTable(container, [
+      { label: "Feedback ID", key: "FeedbackID", render: (r) => `<span class="mono">${r.FeedbackID}</span>` },
+      { label: "Customer", render: (r) => `${r.CustomerName} (${r.CustomerID})` },
+      { label: "Rating", render: (r) => "★".repeat(r.Rating) + "☆".repeat(5 - r.Rating) },
+      { label: "Comments", key: "Comments" },
+      { label: "Date", render: (r) => new Date(r.FeedbackDate).toLocaleDateString() },
+      {
+        label: "Actions",
+        render: (r) => `<button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="deleteFeedback('${r.FeedbackID}')">Delete</button>`
+      }
+    ], feedbacks, { emptyText: "No feedback logged." });
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state" style="color:var(--danger)">Error loading feedback.</div>`;
+  }
+}
+
+async function deleteFeedback(fbId) {
+  if (!confirm(`Delete feedback log ${fbId}?`)) return;
+  try {
+    await api.delete(`/feedback/${fbId}`);
+    showToast("Feedback deleted.");
+    loadFeedback();
+  } catch (err) { showToast(err.message, true); }
+}
+
+// ---------------- Forms Wiring ----------------
 function wireForms() {
   document.getElementById("room-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     try {
       await api.post("/rooms", {
-        room_no: document.getElementById("rm-no").value.trim(),
-        room_type: document.getElementById("rm-type").value.trim(),
-        rate: document.getElementById("rm-rate").value,
-        housekeeper_id: document.getElementById("rm-hk").value.trim() || null,
+        room_no: document.getElementById("room-no").value.trim(),
+        room_type: document.getElementById("room-type").value.trim(),
+        room_rate: document.getElementById("room-rate").value,
+        housekeeper_id: document.getElementById("room-hk").value.trim() || null,
       });
-      showToast("Room added.");
+      showToast("Room added successfully.");
       e.target.reset();
-      loadRooms(); loadDashboard();
+      loadRooms();
+      loadDashboard();
+      loadReports();
     } catch (err) { showToast(err.message, true); }
   });
 
@@ -334,9 +456,9 @@ function wireForms() {
     e.preventDefault();
     try {
       await api.post("/customers", {
-        fname: document.getElementById("c-fname").value.trim(),
-        lname: document.getElementById("c-lname").value.trim(),
-        phone: document.getElementById("c-phone").value.trim(),
+        fname: document.getElementById("cust-fname").value.trim(),
+        lname: document.getElementById("cust-lname").value.trim(),
+        phone: document.getElementById("cust-phone").value.trim(),
       });
       showToast("Customer added.");
       e.target.reset();
@@ -346,40 +468,27 @@ function wireForms() {
 
   document.getElementById("reservation-form").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const toApiDatetime = (v) => (v ? v.replace("T", " ") + ":00" : null);
+    const checkin = document.getElementById("res-checkin").value;
+    const checkoutVal = document.getElementById("res-checkout").value;
+
+    if (checkoutVal && new Date(checkoutVal) <= new Date(checkin)) {
+      showToast("Check-out date must be after check-in date.", true);
+      return;
+    }
+
     try {
       await api.post("/reservations", {
-        room_id: document.getElementById("r-room").value.trim(),
-        customer_id: document.getElementById("r-customer").value.trim(),
-        staff_id: document.getElementById("r-staff").value.trim(),
-        check_in: toApiDatetime(document.getElementById("r-checkin").value),
-        check_out: toApiDatetime(document.getElementById("r-checkout").value),
+        room_no: document.getElementById("res-room").value.trim(),
+        customer_id: document.getElementById("res-cust").value.trim(),
+        check_in: checkin,
+        check_out: checkoutVal || null,
       });
-      showToast("Reservation created.");
+      showToast("Reservation stay created.");
       e.target.reset();
-      loadReservations(); loadRooms(); loadDashboard();
-    } catch (err) { showToast(err.message, true); }
-  });
-
-  const roleSelect = document.getElementById("s-role");
-  const floorWrap = document.getElementById("s-floor-wrap");
-  roleSelect.addEventListener("change", () => {
-    floorWrap.style.display = roleSelect.value === "Housekeeping" ? "block" : "none";
-  });
-
-  document.getElementById("staff-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    try {
-      await api.post("/staff", {
-        fname: document.getElementById("s-fname").value.trim(),
-        lname: document.getElementById("s-lname").value.trim(),
-        role: roleSelect.value,
-        shift: document.getElementById("s-shift").value,
-        floor: document.getElementById("s-floor").value || null,
-      });
-      showToast("Staff member added.");
-      e.target.reset();
-      loadStaff();
+      loadReservations();
+      loadRooms();
+      loadDashboard();
+      loadReports();
     } catch (err) { showToast(err.message, true); }
   });
 
@@ -387,12 +496,13 @@ function wireForms() {
     e.preventDefault();
     try {
       await api.post("/conference-halls", {
-        name: document.getElementById("h-name").value.trim(),
-        capacity: document.getElementById("h-cap").value,
+        name: document.getElementById("hall-name").value.trim(),
+        capacity: document.getElementById("hall-capacity").value,
       });
-      showToast("Hall added.");
+      showToast("Conference hall added.");
       e.target.reset();
       loadHalls();
+      loadReports();
     } catch (err) { showToast(err.message, true); }
   });
 
@@ -400,8 +510,8 @@ function wireForms() {
     e.preventDefault();
     try {
       await api.post("/restaurants", {
-        name: document.getElementById("rt-name").value.trim(),
-        seating_capacity: document.getElementById("rt-seats").value,
+        name: document.getElementById("rest-name").value.trim(),
+        seats: document.getElementById("rest-capacity").value,
       });
       showToast("Restaurant added.");
       e.target.reset();
@@ -413,15 +523,70 @@ function wireForms() {
     e.preventDefault();
     try {
       await api.post("/events", {
-        event_type: document.getElementById("e-type").value,
-        event_date: document.getElementById("e-date").value,
-        duration: document.getElementById("e-duration").value,
-        host_id: document.getElementById("e-host").value.trim(),
-        hall_id: document.getElementById("e-hall").value.trim(),
+        event_type: document.getElementById("evt-type").value,
+        event_date: document.getElementById("evt-date").value,
+        duration: document.getElementById("evt-duration").value,
+        host_id: document.getElementById("evt-host").value.trim(),
+        hall_id: document.getElementById("evt-hall").value.trim(),
       });
-      showToast("Event scheduled.");
+      showToast("Event scheduled successfully.");
       e.target.reset();
       loadEvents();
+      loadDashboard();
+      loadReports();
     } catch (err) { showToast(err.message, true); }
+  });
+
+  document.getElementById("order-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try {
+      await api.post("/restaurant-orders", {
+        customer_id: document.getElementById("ro-cust").value.trim(),
+        restaurant_id: document.getElementById("ro-rest").value.trim(),
+        order_details: document.getElementById("ro-details").value.trim(),
+      });
+      showToast("Order placed successfully.");
+      e.target.reset();
+      loadOrders();
+    } catch (err) { showToast(err.message, true); }
+  });
+
+  document.getElementById("invoice-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try {
+      await api.post("/invoices", {
+        customer_id: document.getElementById("inv-cust").value.trim(),
+        amount_payable: document.getElementById("inv-amount").value,
+        amount_paid: document.getElementById("inv-paid").value || "0.00",
+      });
+      showToast("Invoice created.");
+      e.target.reset();
+      loadInvoices();
+      loadReports();
+    } catch (err) { showToast(err.message, true); }
+  });
+
+  // Requests Modal Actions
+  const approveModal = document.getElementById("approve-request-modal");
+  document.getElementById("close-approve-modal-btn").addEventListener("click", () => {
+    approveModal.classList.remove("open");
+  });
+  
+  document.getElementById("approve-request-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!activeApproveToken) return;
+    const roomNo = document.getElementById("approve-room-select").value;
+    try {
+      await api.put(`/requests/${activeApproveToken}/approve`, { room_no: roomNo });
+      showToast(`Request ${activeApproveToken} approved.`);
+      approveModal.classList.remove("open");
+      loadRequests();
+      loadRooms();
+      loadReservations();
+      loadDashboard();
+      loadReports();
+    } catch (err) {
+      showToast(err.message, true);
+    }
   });
 }

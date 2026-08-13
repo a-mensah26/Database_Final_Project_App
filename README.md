@@ -1,4 +1,4 @@
-# Npontu Hotel Reservation & Event Management — Web App (v1)
+# Akwaaba Hotel Reservation & Event Management — Web App (v1)
 
 First increment: a shared login page, and two role-based dashboards
 (**Front Desk** and **Manager**) built on the Phase 4-6 schema and Phase 6
@@ -73,14 +73,14 @@ purpose — see the comments in that file.
    cd backend
    pip install -r requirements.txt
    cp .env.example .env        # then fill in real DB passwords
-   python seed_users.py        # creates the two demo logins
+   python seed_users.py        # creates the two authorized logins
    python app.py                # http://localhost:5000
    ```
    `app.py` also serves `frontend/` at `/` for convenience during
    development, so opening `http://localhost:5000` gets you straight to
    the login page.
 
-## Demo logins (change immediately — see `seed_users.py`)
+## Seeded logins (change immediately — see `seed_users.py`)
 
 | Username    | Password       | Role        |
 |-------------|----------------|-------------|
