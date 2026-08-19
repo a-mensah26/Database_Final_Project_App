@@ -150,11 +150,21 @@ async function declineRequest(token) {
   }
 }
 
+function populateSelect(selectId, items, valueKey, textFn, placeholder = "-- Select --") {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  const currentVal = select.value;
+  select.innerHTML = `<option value="">${placeholder}</option>` +
+    (items || []).map(item => `<option value="${item[valueKey]}">${textFn(item)}</option>`).join("");
+  if (currentVal) select.value = currentVal;
+}
+
 // ---------------- Rooms ----------------
 async function loadRooms() {
   const container = document.getElementById("rooms-table");
   try {
     const rooms = await api.get("/rooms");
+    populateSelect("res-room", rooms, "RoomNo", r => `Room ${r.RoomNo} (${r.RoomType} - GH₵ ${Number(r.RoomRate).toFixed(2)}) [${r.RoomStatus}]`, "Select Room");
     renderTable(container, [
       { label: "Room No", key: "RoomNo", render: (r) => `<span class="mono">${r.RoomNo}</span>` },
       { label: "Type", key: "RoomType" },
@@ -178,6 +188,9 @@ async function loadCustomers() {
   const container = document.getElementById("customers-table");
   try {
     const custs = await api.get("/customers");
+    ["res-cust", "evt-host", "ro-cust", "fb-cust"].forEach(id => {
+      populateSelect(id, custs, "CustomerID", c => `${c.CustomerFName} ${c.CustomerLName} (${c.CustomerID})`, "Select Customer");
+    });
     renderTable(container, [
       { label: "Customer ID", key: "CustomerID", render: (r) => `<span class="mono">${r.CustomerID}</span>` },
       { label: "First Name", key: "CustomerFName" },
@@ -286,6 +299,7 @@ async function loadReference() {
 
   try {
     const halls = await api.get("/conference-halls");
+    populateSelect("evt-hall", halls, "HallID", h => `${h.HallName} (${h.HallID} - Cap: ${h.Capacity})`, "Select Hall");
     renderTable(hallsContainer, [
       { label: "Hall ID", key: "HallID", render: (r) => `<span class="mono">${r.HallID}</span>` },
       { label: "Name", key: "HallName" },
@@ -295,6 +309,7 @@ async function loadReference() {
 
   try {
     const rests = await api.get("/restaurants");
+    populateSelect("ro-rest", rests, "RestaurantID", r => `${r.RestaurantName} (${r.RestaurantID})`, "Select Restaurant");
     renderTable(restContainer, [
       { label: "Restaurant ID", key: "RestaurantID", render: (r) => `<span class="mono">${r.RestaurantID}</span>` },
       { label: "Name", key: "RestaurantName" },

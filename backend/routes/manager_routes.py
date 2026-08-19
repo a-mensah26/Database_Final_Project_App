@@ -69,14 +69,15 @@ def delete_staff(staff_id):
 @role_required("Manager")
 def add_room():
     body = request.get_json(silent=True) or {}
-    room_type, rate = body.get("room_type"), body.get("rate")
+    room_type = body.get("room_type") or body.get("RoomType")
+    rate = body.get("rate") if body.get("rate") is not None else (body.get("room_rate") or body.get("RoomRate") or body.get("room"))
     if not all([room_type, rate]):
         return jsonify({"error": "room_type and rate are required."}), 400
-    room_no = body.get("room_no") or new_id("R1", 3)
+    room_no = body.get("room_no") or body.get("RoomNo") or new_id("R1", 3)
     _, err = run(
         "INSERT INTO ROOM (RoomNo, RoomType, RoomRate, RoomStatus, HousekeeperID) "
         "VALUES (%s,%s,%s,'Vacant',%s)",
-        (room_no, room_type, rate, body.get("housekeeper_id")),
+        (room_no, room_type, rate, body.get("housekeeper_id") or body.get("HousekeeperID")),
         fetch="none",
     )
     return ok_or_error({"room_no": room_no}, err)
@@ -86,7 +87,8 @@ def add_room():
 @role_required("Manager")
 def update_room(room_no):
     body = request.get_json(silent=True) or {}
-    room_type, rate = body.get("room_type"), body.get("rate")
+    room_type = body.get("room_type") or body.get("RoomType")
+    rate = body.get("rate") if body.get("rate") is not None else (body.get("room_rate") or body.get("RoomRate") or body.get("room"))
     _, err = run(
         "UPDATE ROOM SET RoomType=%s, RoomRate=%s WHERE RoomNo=%s",
         (room_type, rate, room_no),

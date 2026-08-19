@@ -115,8 +115,18 @@
       <div class="card">
         <div class="card-head"><h2>Manual Reservation</h2></div>
         <form class="inline-form" id="reservation-form">
-          <div class="field"><label for="res-room">Room No</label><input id="res-room" placeholder="R101" required /></div>
-          <div class="field"><label for="res-cust">Customer ID</label><input id="res-cust" placeholder="CU01" required /></div>
+          <div class="field">
+            <label for="res-room">Room No</label>
+            <select id="res-room" required>
+              <option value="">Select Room</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="res-cust">Customer</label>
+            <select id="res-cust" required>
+              <option value="">Select Customer</option>
+            </select>
+          </div>
           <div class="field"><label for="res-checkin">Check In</label><input id="res-checkin" type="datetime-local" required /></div>
           <div class="field"><label for="res-checkout">Check Out</label><input id="res-checkout" type="datetime-local" /></div>
           <button class="btn btn-gold" type="submit">Create Stay</button>
@@ -150,8 +160,18 @@
           </div>
           <div class="field"><label for="evt-date">Event Date</label><input id="evt-date" type="date" required /></div>
           <div class="field"><label for="evt-duration">Duration (hrs)</label><input id="evt-duration" type="number" step="0.1" placeholder="3.5" required /></div>
-          <div class="field"><label for="evt-host">Host Customer ID</label><input id="evt-host" placeholder="CU01" required /></div>
-          <div class="field"><label for="evt-hall">Assigned Hall ID</label><input id="evt-hall" placeholder="CH01" required /></div>
+          <div class="field">
+            <label for="evt-host">Host (Customer)</label>
+            <select id="evt-host" required>
+              <option value="">Select Host Customer</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="evt-hall">Conference Hall</label>
+            <select id="evt-hall" required>
+              <option value="">Select Hall</option>
+            </select>
+          </div>
           <button class="btn btn-gold" type="submit">Schedule Event</button>
         </form>
       </div>
@@ -171,8 +191,18 @@
       <div class="card">
         <div class="card-head"><h2>Place Order</h2></div>
         <form class="inline-form" id="order-form">
-          <div class="field"><label for="ro-cust">Customer ID</label><input id="ro-cust" placeholder="CU01" required /></div>
-          <div class="field"><label for="ro-rest">Restaurant ID</label><input id="ro-rest" placeholder="RT01" required /></div>
+          <div class="field">
+            <label for="ro-cust">Customer</label>
+            <select id="ro-cust" required>
+              <option value="">Select Customer</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ro-rest">Restaurant</label>
+            <select id="ro-rest" required>
+              <option value="">Select Restaurant</option>
+            </select>
+          </div>
           <div class="field"><label for="ro-details">Order Details</label><input id="ro-details" placeholder="1x Jollof Rice, 1x Sobolo" required /></div>
           <button class="btn btn-gold" type="submit">Place Order</button>
         </form>
@@ -193,7 +223,12 @@
       <div class="card">
         <div class="card-head"><h2>Log Feedback</h2></div>
         <form class="inline-form" id="feedback-form">
-          <div class="field"><label for="fb-cust">Customer ID</label><input id="fb-cust" placeholder="CU01" required /></div>
+          <div class="field">
+            <label for="fb-cust">Customer</label>
+            <select id="fb-cust" required>
+              <option value="">Select Customer</option>
+            </select>
+          </div>
           <div class="field">
             <label for="fb-rating">Rating</label>
             <select id="fb-rating" required>

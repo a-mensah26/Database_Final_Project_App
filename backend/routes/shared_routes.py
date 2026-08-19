@@ -128,6 +128,16 @@ def list_rooms():
     return ok_or_error(data, err)
 
 
+@shared_bp.route("/housekeepers", methods=["GET"])
+@login_required
+def list_housekeepers():
+    data, err = run(
+        "SELECT StaffID, StaffFName, StaffLName, StaffRole "
+        "FROM STAFF WHERE StaffRole = 'Housekeeping' ORDER BY StaffID"
+    )
+    return ok_or_error(data, err)
+
+
 @shared_bp.route("/rooms/<room_no>/status", methods=["PATCH"])
 @login_required
 def update_room_status(room_no):

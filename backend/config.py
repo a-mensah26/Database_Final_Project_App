@@ -9,6 +9,11 @@ throwaway database.
 import os
 from dotenv import load_dotenv
 
+# Load from backend/.env or root .env regardless of current working directory
+_backend_dir = os.path.dirname(os.path.abspath(__file__))
+_root_dir = os.path.dirname(_backend_dir)
+load_dotenv(os.path.join(_root_dir, ".env"))
+load_dotenv(os.path.join(_backend_dir, ".env"))
 load_dotenv()
 
 # ---- Flask ----
