@@ -15,13 +15,17 @@ def verify_password(plain, hashed):
 def current_user():
     if "user_id" not in session:
         return None
-    return {
-        "user_id": session["user_id"],
-        "username": session["username"],
-        "full_name": session["full_name"],
-        "role": session["role"],
-        "staff_id": session.get("staff_id"),
-    }
+    # Prevent KeyError from stale/colliding session cookies of other apps on localhost
+    try:
+        return {
+            "user_id": session["user_id"],
+            "username": session["username"],
+            "full_name": session["full_name"],
+            "role": session["role"],
+            "staff_id": session.get("staff_id"),
+        }
+    except KeyError:
+        return None
 
 
 def get_db():
@@ -31,17 +35,17 @@ def get_db():
     reuses one connection. Closed in app.py's teardown_appcontext.
     """
     if "db" not in g:
-        role = session.get("role")
-        if role is None:
+        user = current_user()
+        if user is None or user.get("role") is None:
             raise RuntimeError("get_db() called with no authenticated session")
-        g.db = db_module.get_role_connection(role)
+        g.db = db_module.get_role_connection(user["role"])
     return g.db
 
 
 def login_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        if "user_id" not in session:
+        if not current_user():
             return jsonify({"error": "Not authenticated. Please log in."}), 401
         return fn(*args, **kwargs)
     return wrapper
@@ -51,9 +55,10 @@ def role_required(*allowed_roles):
     def decorator(fn):
         @wraps(fn)
         def wrapper(*args, **kwargs):
-            if "user_id" not in session:
+            user = current_user()
+            if not user:
                 return jsonify({"error": "Not authenticated. Please log in."}), 401
-            if session.get("role") not in allowed_roles:
+            if user.get("role") not in allowed_roles:
                 return jsonify({"error": "You do not have permission to do that."}), 403
             return fn(*args, **kwargs)
         return wrapper
