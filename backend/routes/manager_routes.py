@@ -8,6 +8,7 @@ manager_bp = Blueprint("manager", __name__)
 
 # ---------------- Staff ----------------
 
+
 @manager_bp.route("/staff", methods=["GET"])
 @role_required("Manager")
 def list_staff():
@@ -63,6 +64,7 @@ def delete_staff(staff_id):
 # ---------------- Rooms (full edit — Manager has ALL PRIVILEGES; Front
 # Desk is limited by the DB grant to the RoomStatus column only) ----------------
 
+
 @manager_bp.route("/rooms", methods=["POST"])
 @role_required("Manager")
 def add_room():
@@ -95,14 +97,18 @@ def update_room(room_no):
 
 # ---------------- Customers (manager-only delete) ----------------
 
+
 @manager_bp.route("/customers/<customer_id>", methods=["DELETE"])
 @role_required("Manager")
 def delete_customer(customer_id):
-    _, err = run("DELETE FROM CUSTOMER WHERE CustomerID=%s", (customer_id,), fetch="none")
+    _, err = run(
+        "DELETE FROM CUSTOMER WHERE CustomerID=%s", (customer_id,), fetch="none"
+    )
     return ok_or_error({"deleted": customer_id}, err)
 
 
 # ---------------- Conference halls / restaurants / events (write) ----------------
+
 
 @manager_bp.route("/conference-halls", methods=["POST"])
 @role_required("Manager")
@@ -136,8 +142,8 @@ def add_restaurant():
     return ok_or_error({"restaurant_id": rest_id}, err)
 
 
-
 # ---------------- Reports (Phase 6 advanced queries) ----------------
+
 
 @manager_bp.route("/reports/room-inventory", methods=["GET"])
 @role_required("Manager")
@@ -196,8 +202,13 @@ def report_outstanding_invoices():
 
 # ---------------- Customer Feedback Management ----------------
 
+
 @manager_bp.route("/feedback/<feedback_id>", methods=["DELETE"])
 @role_required("Manager")
 def delete_feedback(feedback_id):
-    _, err = run("DELETE FROM CUSTOMER_FEEDBACK WHERE FeedbackID=%s", (feedback_id,), fetch="none")
+    _, err = run(
+        "DELETE FROM CUSTOMER_FEEDBACK WHERE FeedbackID=%s",
+        (feedback_id,),
+        fetch="none",
+    )
     return ok_or_error({"deleted": feedback_id}, err)

@@ -250,7 +250,7 @@ async function loadReservations() {
     renderTable(container, [
       { label: "ID", key: "ReservationID", render: (r) => `<span class="mono font-bold">${r.ReservationID}</span>` },
       { label: "Room No", key: "RoomID", render: (r) => `<span class="mono">${r.RoomID}</span>` },
-      { label: "Guest Name", render: (r) => `${r.CustomerFName} ${r.CustomerLName} (${r.CustomerID})` },
+      { label: "Guest Name", render: (r) => `${r.CustomerName} (${r.CustomerID})` },
       { label: "Check In", render: (r) => new Date(r.CheckIn).toLocaleString() },
       { label: "Check Out", render: (r) => r.CheckOut ? new Date(r.CheckOut).toLocaleString() : `<span class="pill pill-occupied">Stay Active</span>` },
       {
@@ -290,7 +290,7 @@ async function loadStaff() {
     const staff = await api.get("/staff");
     renderTable(container, [
       { label: "Staff ID", key: "StaffID", render: (r) => `<span class="mono">${r.StaffID}</span>` },
-      { label: "Name", render: (r) => `${r.StaffFName} ${r.StaffLName}` },
+      { label: "Name", render: (r) => `${r.StaffName}` },
       { label: "Role/Subtype", key: "StaffRole" },
       { label: "Shift", render: (r) => r.Shift || "—" },
       { label: "Floor", render: (r) => r.AssignedFloor !== null ? r.AssignedFloor : "—" }
@@ -441,7 +441,7 @@ function wireForms() {
       await api.post("/rooms", {
         room_no: document.getElementById("room-no").value.trim(),
         room_type: document.getElementById("room-type").value.trim(),
-        room_rate: document.getElementById("room-rate").value,
+        room: document.getElementById("room-rate").value,
         housekeeper_id: document.getElementById("room-hk").value.trim() || null,
       });
       showToast("Room added successfully.");
@@ -571,7 +571,7 @@ function wireForms() {
   document.getElementById("close-approve-modal-btn").addEventListener("click", () => {
     approveModal.classList.remove("open");
   });
-  
+
   document.getElementById("approve-request-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!activeApproveToken) return;

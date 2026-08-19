@@ -18,7 +18,7 @@ DEBUG = os.environ.get("FLASK_DEBUG", "1") == "1"
 # ---- MariaDB connection basics ----
 DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")
 DB_PORT = int(os.environ.get("DB_PORT", "3306"))
-DB_NAME = os.environ.get("DB_NAME", "HotelReservationSystem")
+DB_NAME = os.environ.get("DB_NAME", "hotelreservationsystem")
 
 # ---- Role-specific MySQL credentials ----
 # hotel_auth   : SELECT-only on APP_USER, used just to check a login

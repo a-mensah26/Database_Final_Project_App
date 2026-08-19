@@ -1,331 +1,408 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Akwaaba Portal — Manager</title>
-<link rel="stylesheet" href="css/style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Akwaaba Portal — Manager</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
+
 <body>
 
-<div class="app-shell">
-  <!-- SIDEBAR NAVIGATION -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      Akwaaba <span>Portal</span>
-      <small>Manager Dashboard</small>
-    </div>
-    
-    <nav class="sidebar-nav tabs">
-      <button class="tab active" data-panel="panel-dashboard">Dashboard</button>
-      <button class="tab" data-panel="panel-reports">Reports</button>
-      <button class="tab" data-panel="panel-requests">Requests Approval</button>
-      <button class="tab" data-panel="panel-rooms">Rooms</button>
-      <button class="tab" data-panel="panel-customers">Customers</button>
-      <button class="tab" data-panel="panel-reservations">Reservations</button>
-      <button class="tab" data-panel="panel-staff">Staff Directory</button>
-      <button class="tab" data-panel="panel-halls">Halls &amp; Restaurants</button>
-      <button class="tab" data-panel="panel-events">Events</button>
-      <button class="tab" data-panel="panel-orders">Restaurant Orders</button>
-      <button class="tab" data-panel="panel-invoices">Invoices &amp; Billing</button>
-      <button class="tab" data-panel="panel-feedback">Customer Feedback</button>
-    </nav>
-    
-    <div class="sidebar-footer">
-      <div class="user-info">
-        <span class="user-name" id="user-name">…</span>
-        <span>Clearance: Manager</span>
+  <div class="app-shell">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        Akwaaba <span>Portal</span>
+        <small>Manager Dashboard</small>
       </div>
-      <button class="btn btn-ghost btn-sm btn-block" id="logout-btn">Sign out</button>
-    </div>
-  </aside>
 
-  <!-- MAIN CONTENT CONTAINER -->
-  <main class="main-content">
-    
-    <!-- DASHBOARD -->
-    <section id="panel-dashboard" class="panel active">
-      <div class="panel-header">
-        <h1>Dashboard</h1>
-        <div class="sub">Key metrics and live hotel occupancy details.</div>
-      </div>
-      <div class="grid grid-4" id="stat-cards"></div>
-      <div class="card" style="margin-top: 2rem;">
-        <div class="card-head"><h2>Current Room Occupancy</h2></div>
-        <div id="occupancy-table" class="loading">Loading…</div>
-      </div>
-    </section>
+      <nav class="sidebar-nav tabs">
+        <button class="tab active" data-panel="panel-dashboard">Dashboard</button>
+        <button class="tab" data-panel="panel-reports">Reports</button>
+        <button class="tab" data-panel="panel-requests">Requests Approval</button>
+        <button class="tab" data-panel="panel-rooms">Rooms</button>
+        <button class="tab" data-panel="panel-customers">Customers</button>
+        <button class="tab" data-panel="panel-reservations">Reservations</button>
+        <button class="tab" data-panel="panel-staff">Staff Directory</button>
+        <button class="tab" data-panel="panel-halls">Halls &amp; Restaurants</button>
+        <button class="tab" data-panel="panel-events">Events</button>
+        <button class="tab" data-panel="panel-orders">Restaurant Orders</button>
+        <button class="tab" data-panel="panel-invoices">Invoices &amp; Billing</button>
+        <button class="tab" data-panel="panel-feedback">Customer Feedback</button>
+      </nav>
 
-    <!-- REPORTS -->
-    <section id="panel-reports" class="panel">
-      <div class="panel-header">
-        <h1>Analytical Reports</h1>
-        <div class="sub">Advanced metrics and summaries from live data.</div>
-      </div>
-      <div class="grid grid-2">
-        <div class="card">
-          <div class="card-head"><h2>Room Inventory Profile</h2></div>
-          <div id="report-rooms-table" class="loading">Loading…</div>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <span class="user-name" id="user-name">…</span>
+          <span>Clearance: Manager</span>
         </div>
-        <div class="card">
-          <div class="card-head"><h2>Outstanding Invoices</h2></div>
-          <div id="report-invoices-table" class="loading">Loading…</div>
+        <button class="btn btn-ghost btn-sm btn-block" id="logout-btn">Sign out</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="main-content">
+
+      <!-- DASHBOARD -->
+      <section id="panel-dashboard" class="panel active">
+        <div class="panel-header">
+          <h1>Dashboard</h1>
+          <div class="sub">Key metrics and live hotel occupancy details.</div>
         </div>
-      </div>
-      <div class="grid grid-2" style="margin-top: 2rem;">
-        <div class="card">
-          <div class="card-head"><h2>Front Desk Staff Workload</h2></div>
-          <div id="report-workload-table" class="loading">Loading…</div>
-        </div>
-        <div class="card">
-          <div class="card-head"><h2>Conference Hall Utilisation</h2></div>
-          <div id="report-hall-table" class="loading">Loading…</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- RESERVATION REQUESTS -->
-    <section id="panel-requests" class="panel">
-      <div class="panel-header">
-        <h1>Reservation Requests</h1>
-        <div class="sub">Review, approve (assign rooms), or decline customer booking requests.</div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>Pending &amp; Past Requests</h2></div>
-        <div id="requests-table" class="loading">Loading requests…</div>
-      </div>
-    </section>
-
-    <!-- ROOMS -->
-    <section id="panel-rooms" class="panel">
-      <div class="panel-header">
-        <h1>Rooms Inventory</h1>
-        <div class="sub">Monitor and update room rates and housekeeper assignments.</div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>Add Room</h2></div>
-        <form class="inline-form" id="room-form">
-          <div class="field"><label for="room-no">Room No</label><input id="room-no" placeholder="R101" required /></div>
-          <div class="field"><label for="room-type">Room Type</label><input id="room-type" placeholder="Single" required /></div>
-          <div class="field"><label for="room-rate">Room Rate (GH₵)</label><input id="room-rate" type="number" step="0.01" required /></div>
-          <div class="field"><label for="room-hk">Housekeeper ID</label><input id="room-hk" placeholder="HK01" /></div>
-          <button class="btn btn-gold" type="submit">Add Room</button>
-        </form>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><h2>Rooms List</h2></div>
-        <div id="rooms-table" class="loading">Loading…</div>
-      </div>
-    </section>
-
-    <!-- CUSTOMERS -->
-    <section id="panel-customers" class="panel">
-      <div class="panel-header">
-        <h1>Customer Directory</h1>
-        <div class="sub">Full directory of hotel customers and details.</div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>Add Customer</h2></div>
-        <form class="inline-form" id="customer-form">
-          <div class="field"><label for="cust-fname">First Name</label><input id="cust-fname" placeholder="Kwame" required /></div>
-          <div class="field"><label for="cust-lname">Last Name</label><input id="cust-lname" placeholder="Mensah" required /></div>
-          <div class="field"><label for="cust-phone">Phone Number</label><input id="cust-phone" placeholder="0246292423" required /></div>
-          <button class="btn btn-gold" type="submit">Add Customer</button>
-        </form>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><h2>Customer Directory</h2></div>
-        <div id="customers-table" class="loading">Loading…</div>
-      </div>
-    </section>
-
-    <!-- RESERVATIONS -->
-    <section id="panel-reservations" class="panel">
-      <div class="panel-header">
-        <h1>Reservations</h1>
-        <div class="sub">Create and view stay history.</div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>Create Stay</h2></div>
-        <form class="inline-form" id="reservation-form">
-          <div class="field"><label for="res-room">Room No</label><input id="res-room" placeholder="R101" required /></div>
-          <div class="field"><label for="res-cust">Customer ID</label><input id="res-cust" placeholder="CU01" required /></div>
-          <div class="field"><label for="res-checkin">Check In</label><input id="res-checkin" type="datetime-local" required /></div>
-          <div class="field"><label for="res-checkout">Check Out</label><input id="res-checkout" type="datetime-local" /></div>
-          <button class="btn btn-gold" type="submit">Create Stay</button>
-        </form>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><h2>Stay History</h2></div>
-        <div id="reservations-table" class="loading">Loading…</div>
-      </div>
-    </section>
-
-    <!-- STAFF -->
-    <section id="panel-staff" class="panel">
-      <div class="panel-header">
-        <h1>Staff Management</h1>
-        <div class="sub">Directory of all hotel and event hub staff.</div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>Staff Directory</h2></div>
-        <div id="staff-table" class="loading">Loading…</div>
-      </div>
-    </section>
-
-    <!-- HALLS & RESTAURANTS -->
-    <section id="panel-halls" class="panel">
-      <div class="panel-header">
-        <h1>Halls &amp; Restaurants</h1>
-        <div class="sub">Configure conference hall spaces and dining halls.</div>
-      </div>
-      <div class="grid grid-2">
-        <div class="card">
-          <div class="card-head"><h2>Add Conference Hall</h2></div>
-          <form id="hall-form">
-            <div class="field"><label for="hall-name">Hall Name</label><input id="hall-name" placeholder="Kente Hall" required /></div>
-            <div class="field"><label for="hall-capacity">Capacity</label><input id="hall-capacity" type="number" required /></div>
-            <button class="btn btn-gold btn-block" type="submit">Add Hall</button>
-          </form>
-        </div>
-        <div class="card">
-          <div class="card-head"><h2>Add Restaurant</h2></div>
-          <form id="restaurant-form">
-            <div class="field"><label for="rest-name">Restaurant Name</label><input id="rest-name" placeholder="Savannah Grill" required /></div>
-            <div class="field"><label for="rest-capacity">Seating Capacity</label><input id="rest-capacity" type="number" required /></div>
-            <button class="btn btn-gold btn-block" type="submit">Add Restaurant</button>
-          </form>
-        </div>
-      </div>
-      <div class="grid grid-2" style="margin-top: 2rem;">
-        <div class="card">
-          <div class="card-head"><h2>Conference Halls</h2></div>
-          <div id="halls-table" class="loading">Loading…</div>
-        </div>
-        <div class="card">
-          <div class="card-head"><h2>Restaurants</h2></div>
-          <div id="restaurants-table" class="loading">Loading…</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- EVENTS -->
-    <section id="panel-events" class="panel">
-      <div class="panel-header">
-        <h1>Events Booking</h1>
-        <div class="sub">Schedule cultural celebrations, weddings, and conferences.</div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>Schedule Event</h2></div>
-        <form class="inline-form" id="event-form">
-          <div class="field">
-            <label for="evt-type">Event Type</label>
-            <select id="evt-type" required>
-              <option value="Wedding">Wedding</option>
-              <option value="Conference">Conference</option>
-              <option value="Seminar">Seminar</option>
-              <option value="Networking Event">Networking Event</option>
-              <option value="Birthday Party">Birthday Party</option>
-            </select>
+        <div class="grid grid-4" id="stat-cards"></div>
+        <div class="card" style="margin-top: 2rem;">
+          <div class="card-head">
+            <h2>Current Room Occupancy</h2>
           </div>
-          <div class="field"><label for="evt-date">Event Date</label><input id="evt-date" type="date" required /></div>
-          <div class="field"><label for="evt-duration">Duration (hrs)</label><input id="evt-duration" type="number" step="0.1" placeholder="3.5" required /></div>
-          <div class="field"><label for="evt-host">Host Customer ID</label><input id="evt-host" placeholder="CU01" required /></div>
-          <div class="field"><label for="evt-hall">Assigned Hall ID</label><input id="evt-hall" placeholder="CH01" required /></div>
-          <button class="btn btn-gold" type="submit">Schedule Event</button>
-        </form>
-      </div>
+          <div id="occupancy-table" class="loading">Loading…</div>
+        </div>
+      </section>
 
-      <div class="card">
-        <div class="card-head"><h2>Upcoming Events</h2></div>
-        <div id="events-table" class="loading">Loading…</div>
-      </div>
-    </section>
+      <!-- REPORTS -->
+      <section id="panel-reports" class="panel">
+        <div class="panel-header">
+          <h1>Analytical Reports</h1>
+          <div class="sub">Advanced metrics and summaries from live data.</div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-head">
+              <h2>Room Inventory Profile</h2>
+            </div>
+            <div id="report-rooms-table" class="loading">Loading…</div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h2>Outstanding Invoices</h2>
+            </div>
+            <div id="report-invoices-table" class="loading">Loading…</div>
+          </div>
+        </div>
+        <div class="grid grid-2" style="margin-top: 2rem;">
+          <div class="card">
+            <div class="card-head">
+              <h2>Front Desk Staff Workload</h2>
+            </div>
+            <div id="report-workload-table" class="loading">Loading…</div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h2>Conference Hall Utilisation</h2>
+            </div>
+            <div id="report-hall-table" class="loading">Loading…</div>
+          </div>
+        </div>
+      </section>
 
-    <!-- RESTAURANT ORDERS -->
-    <section id="panel-orders" class="panel">
-      <div class="panel-header">
-        <h1>Restaurant Orders</h1>
-        <div class="sub">Order fusion cuisine for guest rooms.</div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>Place Order</h2></div>
-        <form class="inline-form" id="order-form">
-          <div class="field"><label for="ro-cust">Customer ID</label><input id="ro-cust" placeholder="CU01" required /></div>
-          <div class="field"><label for="ro-rest">Restaurant ID</label><input id="ro-rest" placeholder="RT01" required /></div>
-          <div class="field"><label for="ro-details">Order Details</label><input id="ro-details" placeholder="1x Jollof Rice, 1x Sobolo" required /></div>
-          <button class="btn btn-gold" type="submit">Place Order</button>
-        </form>
-      </div>
+      <!-- RESERVATION REQUESTS -->
+      <section id="panel-requests" class="panel">
+        <div class="panel-header">
+          <h1>Reservation Requests</h1>
+          <div class="sub">Review, approve (assign rooms), or decline customer booking requests.</div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Pending &amp; Past Requests</h2>
+          </div>
+          <div id="requests-table" class="loading">Loading requests…</div>
+        </div>
+      </section>
 
-      <div class="card">
-        <div class="card-head"><h2>Recent Orders</h2></div>
-        <div id="orders-table" class="loading">Loading…</div>
-      </div>
-    </section>
+      <!-- ROOMS -->
+      <section id="panel-rooms" class="panel">
+        <div class="panel-header">
+          <h1>Rooms Inventory</h1>
+          <div class="sub">Monitor and update room rates and housekeeper assignments.</div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Add Room</h2>
+          </div>
+          <form class="inline-form" id="room-form">
+            <div class="field"><label for="room-no">Room No</label><input id="room-no" placeholder="R101" required />
+            </div>
+            <div class="field"><label for="room-type">Room Type</label><input id="room-type" placeholder="Single"
+                required /></div>
+            <div class="field"><label for="room-rate">Room Rate (GH₵)</label><input id="room-rate" type="number"
+                step="0.01" required /></div>
+            <div class="field"><label for="room-hk">Housekeeper ID</label><input id="room-hk" placeholder="HK01" />
+            </div>
+            <button class="btn btn-gold" type="submit">Add Room</button>
+          </form>
+        </div>
 
-    <!-- INVOICES -->
-    <section id="panel-invoices" class="panel">
-      <div class="panel-header">
-        <h1>Billing &amp; Invoices</h1>
-        <div class="sub">Create manual invoices and track unpaid balances.</div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>Create Manual Invoice</h2></div>
-        <form class="inline-form" id="invoice-form">
-          <div class="field"><label for="inv-cust">Customer ID</label><input id="inv-cust" placeholder="CU01" required /></div>
-          <div class="field"><label for="inv-amount">Amount Payable</label><input id="inv-amount" type="number" step="0.01" required /></div>
-          <div class="field"><label for="inv-paid">Amount Paid</label><input id="inv-paid" type="number" step="0.01" value="0.00" required /></div>
-          <button class="btn btn-gold" type="submit">Create Invoice</button>
-        </form>
-      </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Rooms List</h2>
+          </div>
+          <div id="rooms-table" class="loading">Loading…</div>
+        </div>
+      </section>
 
-      <div class="card">
-        <div class="card-head"><h2>Invoices</h2><div class="sub">Receive payments &amp; update amount paid</div></div>
-        <div id="invoices-table" class="loading">Loading…</div>
-      </div>
-    </section>
+      <!-- CUSTOMERS -->
+      <section id="panel-customers" class="panel">
+        <div class="panel-header">
+          <h1>Customer Directory</h1>
+          <div class="sub">Full directory of hotel customers and details.</div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Add Customer</h2>
+          </div>
+          <form class="inline-form" id="customer-form">
+            <div class="field"><label for="cust-fname">First Name</label><input id="cust-fname" placeholder="Kwame"
+                required /></div>
+            <div class="field"><label for="cust-lname">Last Name</label><input id="cust-lname" placeholder="Mensah"
+                required /></div>
+            <div class="field"><label for="cust-phone">Phone Number</label><input id="cust-phone"
+                placeholder="0246292423" required /></div>
+            <button class="btn btn-gold" type="submit">Add Customer</button>
+          </form>
+        </div>
 
-    <!-- CUSTOMER FEEDBACK -->
-    <section id="panel-feedback" class="panel">
-      <div class="panel-header">
-        <h1>Customer Feedback Management</h1>
-        <div class="sub">Moderate guest feedback reports.</div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>Feedback Logs</h2></div>
-        <div id="feedback-table" class="loading">Loading…</div>
-      </div>
-    </section>
-  </main>
-</div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Customer Directory</h2>
+          </div>
+          <div id="customers-table" class="loading">Loading…</div>
+        </div>
+      </section>
 
-<!-- APPROVE REQUEST MODAL -->
-<div class="portal-modal-backdrop" id="approve-request-modal">
-  <div class="portal-modal-card" style="max-width: 400px;">
-    <button class="portal-close-btn" id="close-approve-modal-btn">&times;</button>
-    <div class="portal-brand">
-      Approve Request
-      <small id="approve-modal-title-token">Token</small>
-    </div>
-    <form id="approve-request-form" class="african-form">
-      <p class="form-help" style="margin-bottom:1rem;">Select an available room to assign to this stay request.</p>
-      <div class="field">
-        <label for="approve-room-select">Available Rooms</label>
-        <select id="approve-room-select" required>
-          <!-- Loaded dynamically -->
-        </select>
-      </div>
-      <button type="submit" class="btn btn-gold btn-block">Confirm Approval</button>
-    </form>
+      <!-- RESERVATIONS -->
+      <section id="panel-reservations" class="panel">
+        <div class="panel-header">
+          <h1>Reservations</h1>
+          <div class="sub">Create and view stay history.</div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Create Stay</h2>
+          </div>
+          <form class="inline-form" id="reservation-form">
+            <div class="field"><label for="res-room">Room No</label><input id="res-room" placeholder="R101" required />
+            </div>
+            <div class="field"><label for="res-cust">Customer ID</label><input id="res-cust" placeholder="CU01"
+                required /></div>
+            <div class="field"><label for="res-checkin">Check In</label><input id="res-checkin" type="datetime-local"
+                required /></div>
+            <div class="field"><label for="res-checkout">Check Out</label><input id="res-checkout"
+                type="datetime-local" /></div>
+            <button class="btn btn-gold" type="submit">Create Stay</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Stay History</h2>
+          </div>
+          <div id="reservations-table" class="loading">Loading…</div>
+        </div>
+      </section>
+
+      <!-- STAFF -->
+      <section id="panel-staff" class="panel">
+        <div class="panel-header">
+          <h1>Staff Management</h1>
+          <div class="sub">Directory of all hotel and event hub staff.</div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Staff Directory</h2>
+          </div>
+          <div id="staff-table" class="loading">Loading…</div>
+        </div>
+      </section>
+
+      <!-- HALLS & RESTAURANTS -->
+      <section id="panel-halls" class="panel">
+        <div class="panel-header">
+          <h1>Halls &amp; Restaurants</h1>
+          <div class="sub">Configure conference hall spaces and dining halls.</div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-head">
+              <h2>Add Conference Hall</h2>
+            </div>
+            <form id="hall-form">
+              <div class="field"><label for="hall-name">Hall Name</label><input id="hall-name" placeholder="Kente Hall"
+                  required /></div>
+              <div class="field"><label for="hall-capacity">Capacity</label><input id="hall-capacity" type="number"
+                  required /></div>
+              <button class="btn btn-gold btn-block" type="submit">Add Hall</button>
+            </form>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h2>Add Restaurant</h2>
+            </div>
+            <form id="restaurant-form">
+              <div class="field"><label for="rest-name">Restaurant Name</label><input id="rest-name"
+                  placeholder="Savannah Grill" required /></div>
+              <div class="field"><label for="rest-capacity">Seating Capacity</label><input id="rest-capacity"
+                  type="number" required /></div>
+              <button class="btn btn-gold btn-block" type="submit">Add Restaurant</button>
+            </form>
+          </div>
+        </div>
+        <div class="grid grid-2" style="margin-top: 2rem;">
+          <div class="card">
+            <div class="card-head">
+              <h2>Conference Halls</h2>
+            </div>
+            <div id="halls-table" class="loading">Loading…</div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h2>Restaurants</h2>
+            </div>
+            <div id="restaurants-table" class="loading">Loading…</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EVENTS -->
+      <section id="panel-events" class="panel">
+        <div class="panel-header">
+          <h1>Events Booking</h1>
+          <div class="sub">Schedule cultural celebrations, weddings, and conferences.</div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Schedule Event</h2>
+          </div>
+          <form class="inline-form" id="event-form">
+            <div class="field">
+              <label for="evt-type">Event Type</label>
+              <select id="evt-type" required>
+                <option value="Wedding">Wedding</option>
+                <option value="Conference">Conference</option>
+                <option value="Seminar">Seminar</option>
+                <option value="Networking Event">Networking Event</option>
+                <option value="Birthday Party">Birthday Party</option>
+              </select>
+            </div>
+            <div class="field"><label for="evt-date">Event Date</label><input id="evt-date" type="date" required />
+            </div>
+            <div class="field"><label for="evt-duration">Duration (hrs)</label><input id="evt-duration" type="number"
+                step="0.1" placeholder="3.5" required /></div>
+            <div class="field"><label for="evt-host">Host Customer ID</label><input id="evt-host" placeholder="CU01"
+                required /></div>
+            <div class="field"><label for="evt-hall">Assigned Hall ID</label><input id="evt-hall" placeholder="CH01"
+                required /></div>
+            <button class="btn btn-gold" type="submit">Schedule Event</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Upcoming Events</h2>
+          </div>
+          <div id="events-table" class="loading">Loading…</div>
+        </div>
+      </section>
+
+      <!-- RESTAURANT ORDERS -->
+      <section id="panel-orders" class="panel">
+        <div class="panel-header">
+          <h1>Restaurant Orders</h1>
+          <div class="sub">Order fusion cuisine for guest rooms.</div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Place Order</h2>
+          </div>
+          <form class="inline-form" id="order-form">
+            <div class="field"><label for="ro-cust">Customer ID</label><input id="ro-cust" placeholder="CU01"
+                required /></div>
+            <div class="field"><label for="ro-rest">Restaurant ID</label><input id="ro-rest" placeholder="RT01"
+                required /></div>
+            <div class="field"><label for="ro-details">Order Details</label><input id="ro-details"
+                placeholder="1x Jollof Rice, 1x Sobolo" required /></div>
+            <button class="btn btn-gold" type="submit">Place Order</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Recent Orders</h2>
+          </div>
+          <div id="orders-table" class="loading">Loading…</div>
+        </div>
+      </section>
+
+      <!-- INVOICES -->
+      <section id="panel-invoices" class="panel">
+        <div class="panel-header">
+          <h1>Billing &amp; Invoices</h1>
+          <div class="sub">Create manual invoices and track unpaid balances.</div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Create Manual Invoice</h2>
+          </div>
+          <form class="inline-form" id="invoice-form">
+            <div class="field"><label for="inv-cust">Customer ID</label><input id="inv-cust" placeholder="CU01"
+                required /></div>
+            <div class="field"><label for="inv-amount">Amount Payable</label><input id="inv-amount" type="number"
+                step="0.01" required /></div>
+            <div class="field"><label for="inv-paid">Amount Paid</label><input id="inv-paid" type="number" step="0.01"
+                value="0.00" required /></div>
+            <button class="btn btn-gold" type="submit">Create Invoice</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Invoices</h2>
+            <div class="sub">Receive payments &amp; update amount paid</div>
+          </div>
+          <div id="invoices-table" class="loading">Loading…</div>
+        </div>
+      </section>
+
+      <!-- CUSTOMER FEEDBACK -->
+      <section id="panel-feedback" class="panel">
+        <div class="panel-header">
+          <h1>Customer Feedback Management</h1>
+          <div class="sub">Moderate guest feedback reports.</div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Feedback Logs</h2>
+          </div>
+          <div id="feedback-table" class="loading">Loading…</div>
+        </div>
+      </section>
+    </main>
   </div>
-</div>
 
-<script src="js/api.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/manager.js"></script>
+  <!-- APPROVE REQUEST MODAL -->
+  <div class="portal-modal-backdrop" id="approve-request-modal">
+    <div class="portal-modal-card" style="max-width: 400px;">
+      <button class="portal-close-btn" id="close-approve-modal-btn">&times;</button>
+      <div class="portal-brand">
+        Approve Request
+        <small id="approve-modal-title-token">Token</small>
+      </div>
+      <form id="approve-request-form" class="african-form">
+        <p class="form-help" style="margin-bottom:1rem;">Select an available room to assign to this stay request.</p>
+        <div class="field">
+          <label for="approve-room-select">Available Rooms</label>
+          <select id="approve-room-select" required>
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+        <button type="submit" class="btn btn-gold btn-block">Confirm Approval</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/manager.js"></script>
 </body>
+
 </html>
